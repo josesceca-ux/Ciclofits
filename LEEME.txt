@@ -1,0 +1,19 @@
+CicloFit para iPhone
+====================
+
+1. Sube esta carpeta completa (index.html, sw.js, manifest.webmanifest e icons) a un hosting con https.
+   La forma más rápida: entra desde una computadora a https://app.netlify.com/drop y arrastra la carpeta CicloFit.
+   También sirve GitHub Pages, Vercel o el hosting de tu dominio.
+
+2. En el iPhone, abre el enlace en Safari.
+
+3. Toca el botón Compartir (cuadro con flecha hacia arriba) y elige "Agregar a pantalla de inicio".
+
+4. Abre CicloFit desde el ícono: se abre a pantalla completa y funciona sin conexión.
+
+Tus datos
+- Se guardan en el iPhone, dentro de la app.
+- Para pasarlos a otro teléfono: Perfil > Copiar respaldo, y en el otro teléfono Perfil > Restaurar respaldo.
+- Si borras la app de la pantalla de inicio, se borran sus datos: haz un respaldo antes.
+
+Para actualizar la app, reemplaza los archivos en el hosting y abre la app con conexión.
