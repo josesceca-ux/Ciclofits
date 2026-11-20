@@ -8,7 +8,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="CicloFit">
-<meta name="ciclofit-build" content="20261120152456">
+<meta name="ciclofit-build" content="20261120160307">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
@@ -8507,6 +8507,18 @@ function avScene(P, J) {
   return g;
 }
 
+/* suaviza los saltos bruscos del dibujo entre cuadros (por ejemplo cuando una rodilla o un codo cambian de lado de golpe):
+   las articulaciones siguen a la pose con un retraso de ~2 cuadros, casi imperceptible pero sin "tirones" */
+function avSmoothJ(st, J, dt) {
+  const T = window.T3, keys = ["H", "S", "C", "head", "sh1", "sh2", "el1", "el2", "hd1", "hd2", "hip1", "hip2", "kn1", "kn2", "an1", "an2"];
+  const a = dt > 0 ? 1 - Math.exp(-dt / 45) : 1, prev = st.Jsm;
+  if (!prev || a >= 1) { st.Jsm = { v: {}, p: {} }; keys.forEach(k => { if (J[k] && J[k].isVector3) st.Jsm.v[k] = J[k].clone(); }); for (const k of ["h", "s"]) if (J.p && J.p[k]) st.Jsm.p[k] = J.p[k].slice(); if (J.c2) st.Jsm.c2 = J.c2.slice(); return; }
+  keys.forEach(k => { if (!J[k] || !J[k].isVector3) return; const pv = prev.v[k]; if (!pv) { prev.v[k] = J[k].clone(); return; } pv.lerp(J[k], a); J[k].copy(pv); });
+  const lerp2 = (q, t) => { q[0] += (t[0] - q[0]) * a; q[1] += (t[1] - q[1]) * a; return q; };
+  if (J.p) for (const k of ["h", "s"]) if (J.p[k] && prev.p[k]) { J.p[k] = lerp2(prev.p[k], J.p[k]).slice(); }
+  if (J.c2 && prev.c2) J.c2 = lerp2(prev.c2, J.c2).slice();
+}
+
 /* ---- Visor: escena, luces, cámara que se gira con el dedo ---- */
 function avDispose(obj) { obj.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) [].concat(o.material).forEach(m => { if (m.map) m.map.dispose(); m.dispose(); }); }); }
 function avFloorTex() {
@@ -8539,7 +8551,7 @@ function avOpen(host, ex, cap) {
   const shadowPlane = new T.Mesh(new T.PlaneGeometry(600, 600), new T.ShadowMaterial({ opacity: 0.2 })); shadowPlane.rotation.x = -Math.PI / 2; shadowPlane.position.y = 0.05; shadowPlane.receiveShadow = true; scene.add(shadowPlane);
   const skin = SKINS[state.profile && state.profile.piel != null ? state.profile.piel : 2][0];
   const G = AV.glb;
-  if (G && !G.scaled) { G.gltf.scene.scale.multiplyScalar(82 / G.rig.legLen); G.gltf.scene.traverse(o => { if (o.isMesh) { o.castShadow = true; o.frustumCulled = false; if (o.material) [].concat(o.material).forEach(m => { if ("envMapIntensity" in m) m.envMapIntensity = 0.9; }); } }); G.scaled = true; }
+  if (G && !G.scaled) { G.gltf.scene.scale.multiplyScalar(82 / G.rig.legLen); G.gltf.scene.traverse(o => { if (o.isMesh) { o.castShadow = true; o.frustumCulled = false; if (o.material) [].concat(o.material).forEach(m => { if ("envMapIntensity" in m) m.envMapIntensity = 0.9; }); } }); if (!window.NODQ) avUseDQS(G.gltf.scene); G.scaled = true; }
   /* "lie": los ejercicios dibujados desde arriba (aperturas acostada en banco) se acuestan de verdad en 3D.
      Se posa sin girar y se gira sólo para dibujar, así el cálculo de la pose no cambia. */
   const lie = new T.Group(); scene.add(lie); const LIE = !!P.noFloor;
@@ -8577,6 +8589,7 @@ function avOpen(host, ex, cap) {
   /* encuadre: recorre el movimiento y abarca cuerpo, pesas y equipo */
   const box = new T.Box3();
   let overHead = false;   /* acostada con las manos más allá de la cabeza (pullover): se mira desde el lado de la cabeza */
+  AV.dtS = 0;
   for (const uu of [0, 0.25, 0.5, 0.75, 1]) {
     const J = avPose(P, ex, uu, 0);
     if (!P.view && Math.abs(J.head.y - J.H.y) < 0.45 * J.head.distanceTo(J.H)) { const ax = J.head.clone().sub(J.H).setY(0).normalize(); if (J.hd1.clone().sub(J.head).dot(ax) > 8) overHead = true; }
@@ -8585,7 +8598,7 @@ function avOpen(host, ex, cap) {
     else { avPoseGLB(G, J); props.update(J); lieOn(); props.g.updateMatrixWorld(true); G.gltf.scene.updateMatrixWorld(true); G.gltf.scene.traverse(o => { if (o.isBone) box.expandByPoint(o.getWorldPosition(new T.Vector3())); }); }
     box.expandByObject(props.g);
   }
-  if (G) box.expandByScalar(12);
+  if (G) { box.expandByScalar(12); G.rig._hint = {}; G.rig._side = {}; G.rig._ikv = {}; G.rig._tsg = {}; G.rig._elp = {}; G.rig._ikS = {}; }   /* la continuidad entre cuadros empieza de cero en cada ejercicio */
   const ctr = box.getCenter(new T.Vector3()), size = box.getSize(new T.Vector3());
   const floorEx = FLOOR.has(ex.pat);
   const cam = new T.PerspectiveCamera(28, 1, 5, 4000);
@@ -8608,6 +8621,7 @@ function avOpen(host, ex, cap) {
     if (st.playing) st.t = (st.t + dt * st.speed / (P.per || 2600)) % 1;
     const c = cycleU(st.t, cue);
     const J = avPose(P, ex, c.u, st.t);
+    if (!B) { avSmoothJ(st, J, st.playing ? dt : 0); AV.dtS = st.playing ? dt : 0; }
     lieOff();
     if (!B) { avPoseGLB(G, J); props.update(J); }
     else { avApply(B, J); props.update(J);
@@ -8678,12 +8692,12 @@ function avRigFind(root) {
   const pickAny = re => all.find(x => re.test(x.base));
   M.hips = pick(/^(hips|pelvis)$/) || pickAny(/^(hips|pelvis)$/);
   M.spines = all.filter(x => !x.side && /^(spine\d*|chest|upperchest|torso|spine0\d)$/.test(x.base));
-  M.neck = pick(/^neck\d*$/) || pickAny(/^neck\d*$/); M.head = pick(/^head$/) || pickAny(/^head$/);
+  M.neck = pick(/^neck\d*$/) || pickAny(/^neck\d*$/); M.head = pick(/^head$/) || pickAny(/^head$/); M.hairB = pick(/^hairback$/);
   for (const s of ["L", "R"]) {
     M["cla" + s] = pick(/^(shoulder|clavicle|collar)$/, s); M["half" + s] = pick(/^armhalf$/, s);
     M["fing1" + s] = pick(/^handfingers1$/, s); M["fing2" + s] = pick(/^handfingers2$/, s); M["hair" + s] = pick(/^hairside$/, s);
     M["ua" + s] = pick(/^(arm|upperarm)$/, s); M["fa" + s] = pick(/^(forearm|lowerarm)$/, s); M["hand" + s] = pick(/^(hand|wrist)$/, s);
-    M["knee" + s] = pick(/^kneehalf$/, s);
+    M["knee" + s] = pick(/^kneehalf$/, s); M["hipH" + s] = pick(/^upleghalf$/, s);
     M["th" + s] = pick(/^(upleg|upperleg|thigh)$/, s); M["sh" + s] = pick(/^(leg|lowerleg|calf|shin)$/, s); M["ft" + s] = pick(/^(foot|ankle)$/, s); M["toe" + s] = pick(/^(toebase|toe|toes|ball)$/, s);
   }
   const need = ["hips", "head", "uaL", "uaR", "faL", "faR", "handL", "handR", "thL", "thR", "shL", "shR", "ftL", "ftR"];
@@ -8745,6 +8759,17 @@ function avRigFind(root) {
         const ext = [(a, c) => c.z < a.z, (a, c) => c.z > a.z, (a, c) => c.x < a.x, (a, c) => c.x > a.x, (a, c) => c.y < a.y].map(f => pts.reduce((a, c) => (f(a, c) ? c : a)));
         ext.forEach(q => sole.body.push({ b, p: q.clone().applyMatrix4(sk.skeleton.boneInverses[bi]) }));
       }
+      /* puntas de la melena (hueso HairBack) */
+      const hbi = M.hairB ? bones.indexOf(M.hairB) : -1;
+      if (hbi >= 0) {
+        const pts = [];
+        for (let i = 0; i < pos.count; i += 2) { let w = 0; for (let k = 0; k < 4; k++) if (si.getComponent(i, k) === hbi) w += sw.getComponent(i, k); if (w > 0.6) pts.push(new T.Vector3().fromBufferAttribute(pos, i)); }
+        if (pts.length > 10) {
+          pts.sort((a, b) => a.y - b.y);
+          const ext = [pts[0], pts[Math.floor(pts.length * 0.1)], pts.reduce((a, c) => (c.z < a.z ? c : a)), pts.reduce((a, c) => (c.x < a.x ? c : a)), pts.reduce((a, c) => (c.x > a.x ? c : a))];
+          sole.hair = ext.map(q => q.clone().applyMatrix4(sk.skeleton.boneInverses[hbi]));
+        }
+      }
       /* cabeza (con el pelo): puntos extremos, para que acostada no se meta en el piso */
       const hi = bones.indexOf(M.head);
       if (hi >= 0) {
@@ -8778,6 +8803,33 @@ function avPoseGLB(G, J) {
   J.toes1 = avToes(J, 1); J.toes2 = avToes(J, 2);
   const T = window.T3, rig = G.rig, M = rig.M, root = rig.root;
   const L = new T.Vector3().crossVectors(J.up, J.F).normalize();
+  const smooth = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+  /* lado (eje de doblez) de cada articulación: cuando el brazo o la pierna están casi rectos se conserva el del cuadro
+     anterior y se pasa suave al eje real al doblar; así no hay giros bruscos del antebrazo o la rodilla */
+  const sideFor = (key, ax, dirN, ref) => {
+    const prev = rig._side || (rig._side = {}), w = smooth(0.06, 0.3, ax.length() / Math.max(ref, 1e-6));
+    let p = prev[key] ? prev[key].clone() : L.clone(); p.addScaledVector(dirN, -p.dot(dirN)); if (p.lengthSq() < 1e-6) p = L.clone().addScaledVector(dirN, -L.dot(dirN)); if (p.lengthSq() < 1e-6) p.set(0, 0, 1); p.normalize();
+    const a = ax.lengthSq() > 1e-12 ? ax.clone().normalize() : p.clone();
+    if (a.dot(p) < 0 && w < 0.95) a.negate();   /* casi recto o muy doblado: el signo del eje no es fiable, se conserva */
+    const r = p.multiplyScalar(1 - w).addScaledVector(a, w); if (r.lengthSq() < 1e-6) r.copy(a); r.normalize();
+    prev[key] = r.clone(); return r;
+  };
+  /* gira un hueso lo mínimo para que f() llegue a "goal" (bisección: el ángulo cambia de forma continua entre cuadros) */
+  /* el sentido de giro se elige con el punto más bajo (el que hay que levantar): no cambia de un cuadro a otro */
+  const solveRot = (bone, ax, f, goal, maxA, lowPt, scale, fixedSign) => {
+    const f0 = f(); if (f0 >= goal) return;
+    const wq0 = bone.getWorldQuaternion(new T.Quaternion()), pinv = bone.parent.getWorldQuaternion(new T.Quaternion()).invert(), q0 = bone.quaternion.clone();
+    const setA = a => { bone.quaternion.copy(pinv.clone().multiply(new T.Quaternion().setFromAxisAngle(ax, a)).multiply(wq0)); bone.updateMatrixWorld(true); };
+    let sg;
+    if (fixedSign) sg = fixedSign;
+    else if (lowPt) { const lp = lowPt(), r = lp.sub(bone.getWorldPosition(new T.Vector3())), up = new T.Vector3().crossVectors(ax, r).y; if (Math.abs(up) < 1e-3) return; sg = up > 0 ? 1 : -1; }
+    else { setA(0.08); const fp = f(); setA(-0.08); const fn = f(); sg = fp >= fn ? 1 : -1;
+      if (Math.max(fp, fn) <= f0 + 1e-4) { bone.quaternion.copy(q0); bone.updateMatrixWorld(true); return; } }
+    const k = scale == null ? 1 : scale;
+    setA(sg * maxA); if (f() < goal) { if (k < 1) setA(sg * maxA * k); return; }
+    let lo = 0, hi = maxA; for (let i = 0; i < 9; i++) { const mid = (lo + hi) / 2; setA(sg * mid); if (f() >= goal) hi = mid; else lo = mid; }
+    setA(sg * hi * k);
+  };
   /* tronco a lo largo de la curva cadera → hombros */
   const P3 = t => J.W(avBez(J.p.h, J.c2, J.p.s, t)), tan = (a, b) => P3(b).sub(P3(a)).normalize();
   avAim(rig, M.hips, tan(0, 0.35), L);
@@ -8786,6 +8838,24 @@ function avPoseGLB(G, J) {
   const hu = J.head.clone().sub(J.S).normalize();
   if (M.neck) avAim(rig, M.neck, hu, L);
   avAim(rig, M.head, hu, L);
+  /* melena: si la cabeza queda abajo (hiperextensión, perro boca abajo) el pelo cae hacia el piso */
+  const hbB = M.hairB;
+  if (hbB) {
+    hbB.quaternion.copy(hbB.userData.q0 || new T.Quaternion()); hbB.updateMatrixWorld(true);
+    const hq = hbB.getWorldQuaternion(new T.Quaternion()), hang = new T.Vector3(0, -1, 0).applyQuaternion(hq), ang = Math.acos(Math.max(-1, Math.min(1, -hang.y)));
+    const k = Math.max(0, Math.min(1, (ang - 1.65) / 0.9)) * 0.85;
+    if (k > 0) { const ax = new T.Vector3().crossVectors(hang, new T.Vector3(0, -1, 0)); if (ax.lengthSq() < 1e-6) ax.copy(L); ax.normalize();
+      hbB.quaternion.copy(hbB.parent.getWorldQuaternion(new T.Quaternion()).invert().multiply(new T.Quaternion().setFromAxisAngle(ax, ang * k)).multiply(hq)); hbB.updateMatrixWorld(true); }
+  }
+  /* si el codo del dibujo salta al otro lado de la línea hombro→mano de un cuadro a otro (pasa con el brazo muy doblado),
+     se refleja de vuelta: el brazo 3D sigue un movimiento continuo */
+  { const pe = rig._elp || (rig._elp = {});
+    for (const n2 of [1, 2]) {
+      const sh = J["sh" + n2], el = J["el" + n2], hd = J["hd" + n2], ax = hd.clone().sub(sh); if (ax.lengthSq() < 1e-6) continue; ax.normalize();
+      const e = el.clone().sub(sh), perp = e.clone().addScaledVector(ax, -e.dot(ax)), pl = perp.length();
+      if (pe[n2] && pl > 2 && perp.dot(pe[n2]) < -0.2 * pl) { J["el" + n2] = sh.clone().addScaledVector(ax, e.dot(ax)).sub(perp); perp.negate(); }
+      if (pl > 2) pe[n2] = perp.normalize();
+    } }
   /* hombros: al subir el brazo por encima de ~70° la clavícula acompaña (como un encogimiento), así el deltoides no se aplasta */
   const tUp = J.S.clone().sub(J.H).normalize(), wpb = b => b.getWorldPosition(new T.Vector3());
   for (const [s, n2] of [["R", 1], ["L", 2]]) {
@@ -8807,8 +8877,9 @@ function avPoseGLB(G, J) {
   for (const [s, n2] of [["R", 1], ["L", 2]]) {
     const hp = J["hip" + n2], kn = J["kn" + n2], an = J["an" + n2];
     const th = kn.clone().sub(hp), sn = an.clone().sub(kn), axL = new T.Vector3().crossVectors(th, sn);
-    const sideL = axL.length() > 0.15 * th.length() * sn.length() ? axL.normalize() : L;
+    const sideL = sideFor("L" + s, axL, th.clone().normalize(), th.length() * sn.length());
     avAim(rig, M["th" + s], th, sideL); avAim(rig, M["sh" + s], sn, sideL);
+    const hh = M["hipH" + s]; if (hh && hh.parent === M["th" + s].parent) { hh.quaternion.identity().slerp(M["th" + s].quaternion, 0.5); hh.updateMatrixWorld(true); }
     const kb = M["knee" + s]; if (kb && kb.parent === M["sh" + s].parent) { kb.quaternion.identity().slerp(M["sh" + s].quaternion, 0.5); kb.updateMatrixWorld(true); }
     avAim(rig, M["ft" + s], J["toes" + n2] || J.F, L);
   }
@@ -8817,10 +8888,9 @@ function avPoseGLB(G, J) {
   const wp = b => b.getWorldPosition(new T.Vector3());
   const hipsW = wp(M.hips), target = J.H.clone();
   const off = target.sub(hipsW); root.position.add(off); root.updateMatrixWorld(true);
-  const standing = J.an1.y < 14 && J.an2.y < 14 && J.H.y > 40;   /* pies en el piso y cadera arriba (aunque el tronco esté inclinado) */
-  if (standing) { const fy = Math.min(wp(M.ftL).y, wp(M.ftR).y); root.position.y += J.an1.y * 0.5 + J.an2.y * 0.5 - fy; root.updateMatrixWorld(true); }
-  /* zapatillas: si la punta o el talón se hunden en el piso, el pie se gira en el tobillo (de puntitas o con el talón)
-     y, si aun así no alcanza y no está de pie, el cuerpo sube lo justo */
+  /* de pie (pies en el piso, cadera arriba): las suelas pisan el piso; el paso a "no de pie" es gradual */
+  const ws = (1 - smooth(10, 20, Math.max(J.an1.y, J.an2.y))) * smooth(30, 42, J.H.y), standing = ws > 0.5;
+  if (ws > 0) { const fy = Math.min(wp(M.ftL).y, wp(M.ftR).y); root.position.y += ws * (J.an1.y * 0.5 + J.an2.y * 0.5 - fy); root.updateMatrixWorld(true); }
   const soleY = s => { const ft = M["ft" + s], sm = rig.sole && rig.sole[s]; if (!sm) return null; ft.updateMatrixWorld(true); return sm.map(q => q.clone().applyMatrix4(ft.matrixWorld).y); };
   const soleLow = s => { const ys = soleY(s); return ys ? Math.min(...ys) : 1e9; };
   const fl = AV.floorY || 0;   /* altura del piso mientras se calcula la pose */
@@ -8830,52 +8900,49 @@ function avPoseGLB(G, J) {
     if (rig.sole && rig.sole.head) { M.head.updateMatrixWorld(true); for (const q of rig.sole.head) mn = Math.min(mn, q.clone().applyMatrix4(M.head.matrixWorld).y); }
     return mn;
   };
+  const lowPtOf = (bone, pts) => () => { bone.updateMatrixWorld(true); let best = null, mn = 1e9; for (const q of pts) { const w = q.clone().applyMatrix4(bone.matrixWorld); if (w.y < mn) { mn = w.y; best = w; } } return best; };
+  const headLow = () => { M.head.updateMatrixWorld(true); let mn = 1e9; if (rig.sole && rig.sole.head) for (const q of rig.sole.head) mn = Math.min(mn, q.clone().applyMatrix4(M.head.matrixWorld).y); return mn; };
+  /* apoyada en las puntas (plancha, zancada): si la punta se hunde más que el talón, el pie se pone de puntitas */
+  for (const s of ["L", "R"]) {
+    const ys = soleY(s); if (!ys) continue;
+    const toe = Math.min(ys[1], ys[4]), kT = smooth(0.5, 3.5, ys[0] - toe) * smooth(0, 1.5, fl - toe);
+    if (kT > 0) { const ft = M["ft" + s], tp = rig.sole[s][4].clone().applyMatrix4(ft.matrixWorld), Fh = J.F.clone().setY(0);
+      const ts = rig._tsg || (rig._tsg = {}); if (!ts[s]) ts[s] = new T.Vector3().crossVectors(L, tp.sub(ft.getWorldPosition(new T.Vector3()))).dot(Fh) >= 0 ? 1 : -1;
+      solveRot(ft, L, () => soleLow(s), fl - 0.3, 0.9, null, kT, ts[s]); }
+    else if (rig._tsg) delete rig._tsg[s];
+  }
   /* cabeza: si se mete en el piso (acostada), se recoge un poco el mentón */
-  const headTuck = () => {
-    if (!(rig.sole && rig.sole.head)) return;
-    const hb = M.head, hl = () => { hb.updateMatrixWorld(true); let mn = 1e9; for (const q of rig.sole.head) mn = Math.min(mn, q.clone().applyMatrix4(hb.matrixWorld).y); return mn; };
-    let best = hl(); if (best >= fl - 0.5) return;
-    const wq0 = hb.getWorldQuaternion(new T.Quaternion()), pinv = hb.parent.getWorldQuaternion(new T.Quaternion()).invert(); let bq = hb.quaternion.clone();
-    outerH: for (const th of [0.1, 0.2, 0.3, 0.42, 0.55]) for (const sg of [1, -1]) {
-      hb.quaternion.copy(pinv.clone().multiply(new T.Quaternion().setFromAxisAngle(L, sg * th)).multiply(wq0));
-      const m1 = hl(); if (m1 > best + 0.05) { best = m1; bq = hb.quaternion.clone(); } if (best >= fl - 0.3) break outerH;
-    }
-    hb.quaternion.copy(bq); hb.updateMatrixWorld(true);
-  };
+  if (ws < 1 && rig.sole && rig.sole.head) solveRot(M.head, L, headLow, fl - 0.3, 0.55, lowPtOf(M.head, rig.sole.head));
+  /* sentada/acostada en el piso: el punto más bajo queda justo en el piso; si no, sólo se evita atravesarlo */
   {
-    if (!standing && J.H.y < 16) {
-      /* sentada o acostada en el piso: el punto más bajo (cuerpo, cabeza o zapatillas) queda justo en el piso */
-      headTuck(); const low = Math.min(bodyLow(), soleLow("L"), soleLow("R"));
-      if (low > fl - 40 && low < fl + 30) { root.position.y += Math.max(-10, Math.min(fl - low, 14)); root.updateMatrixWorld(true); }
-    } else {
-      /* apoyada en las puntas (plancha, zancada): si la punta de la zapatilla se hunde, el pie se pone de puntitas */
-      for (const s of ["L", "R"]) {
-        const ys = soleY(s); if (!ys) continue;
-        const heel = ys[0], toe = Math.min(ys[1], ys[4]);
-        if (toe > fl - 1 || toe > heel - 2) continue;
-        const ft = M["ft" + s], wq0 = ft.getWorldQuaternion(new T.Quaternion()), pinv = ft.parent.getWorldQuaternion(new T.Quaternion()).invert();
-        let best = Math.min(...ys), bq = ft.quaternion.clone();
-        outerF: for (const th of [0.12, 0.25, 0.4, 0.55, 0.7, 0.9]) for (const sg of [1, -1]) {
-          ft.quaternion.copy(pinv.clone().multiply(new T.Quaternion().setFromAxisAngle(L, sg * th)).multiply(wq0));
-          const m1 = soleLow(s); if (m1 > best + 0.05) { best = m1; bq = ft.quaternion.clone(); } if (best >= fl - 0.3) break outerF;
-        }
-        ft.quaternion.copy(bq); ft.updateMatrixWorld(true);
-      }
-      if (!standing) headTuck();
-      const low = Math.min(soleLow("L"), soleLow("R"), J.H.y < 30 ? bodyLow() : 1e9);
-      if (!standing && low < fl - 0.5 && low > fl - 40) { root.position.y += Math.min(fl - low, 14); root.updateMatrixWorld(true); }
+    const low = Math.min(soleLow("L"), soleLow("R"), bodyLow());
+    if (low > fl - 40 && low < fl + 30) {
+      const wf = (1 - ws) * (1 - smooth(12, 20, J.H.y)), wl = (1 - ws) - wf;
+      const dy = wf * Math.max(-10, Math.min(fl - low, 14)) + wl * Math.max(0, Math.min(fl - low, 14));
+      if (Math.abs(dy) > 1e-3) { root.position.y += dy; root.updateMatrixWorld(true); }
     }
+  }
+  /* el pelo no atraviesa el piso: la melena se levanta lo justo */
+  if (hbB && rig.sole && rig.sole.hair) {
+    const hl = () => { hbB.updateMatrixWorld(true); let mn = 1e9; for (const q of rig.sole.hair) mn = Math.min(mn, q.clone().applyMatrix4(hbB.matrixWorld).y); return mn; };
+    solveRot(hbB, L, hl, fl - 0.2, 1.25, lowPtOf(hbB, rig.sole.hair));
+    if (hl() < fl - 0.2) solveRot(hbB, new T.Vector3().crossVectors(L, new T.Vector3(0, 1, 0)).normalize(), hl, fl - 0.2, 1.0, lowPtOf(hbB, rig.sole.hair));
   }
   /* brazos. Con mancuernas/barras en la mano basta la dirección del dibujo (el implemento sigue a la mano).
      Cuando la mano se apoya (piso, banco) o agarra una barra fija (sentadilla, hip thrust), se calcula con IK
      para que la mano del modelo llegue a ese punto aunque sus brazos midan distinto que los del dibujo. */
   const surf = AV.surf || [];
   const onSurf = q => { if (q.y < 9) return 0; for (const f of surf) if (Math.abs(q.y - f.y) < 6 && q.x > f.x0 - 4 && q.x < f.x1 + 4) return f.y; return null; };
-  const ik2 = (S0, Tt, a, b, hint) => {
+  const ik2 = (S0, Tt, a, b, hint, key) => {
     const d = Tt.clone().sub(S0); let Ld = d.length(); const u = d.divideScalar(Ld || 1);
     Ld = Math.min(Math.max(Ld, Math.abs(a - b) + 0.01), a + b - 0.01);
     const x = (a * a - b * b + Ld * Ld) / (2 * Ld), h = Math.sqrt(Math.max(0, a * a - x * x));
-    let v = hint.clone().addScaledVector(u, -hint.dot(u)); if (v.lengthSq() < 1e-6) v = tUp.clone().negate().addScaledVector(u, tUp.dot(u)); v.normalize();
+    let v = hint.clone().addScaledVector(u, -hint.dot(u)); const vl = v.length();
+    /* si la pista queda casi en la línea hombro→mano (mano pasando junto al hombro), se usa el codo del cuadro anterior */
+    const pk = rig._ikv || (rig._ikv = {}), pvv = key && pk[key] ? pk[key].clone().addScaledVector(u, -pk[key].dot(u)) : null;
+    if (vl < 0.35 && pvv && pvv.lengthSq() > 1e-6) { pvv.normalize(); v = vl > 1e-6 ? v.normalize().multiplyScalar(vl / 0.35).addScaledVector(pvv, 1 - vl / 0.35) : pvv; }
+    if (v.lengthSq() < 1e-6) v = tUp.clone().negate().addScaledVector(u, tUp.dot(u)); v.normalize();
+    if (key) pk[key] = v.clone();
     const E = S0.clone().addScaledVector(u, x).addScaledVector(v, h);
     return { E, H: S0.clone().addScaledVector(u, Ld) };
   };
@@ -8911,7 +8978,7 @@ function avPoseGLB(G, J) {
       for (const k of ["R", "L"]) { const o = G2[k], S0 = wp(M["ua" + k]), reach = S0.distanceTo(wp(M["fa" + k])) + wp(M["fa" + k]).distanceTo(wp(M["hand" + k])) + 7.5, v = o.g.clone().sub(S0), dl = v.length(); if (dl > reach) off2.addScaledVector(v.normalize(), (dl - reach) / 2); }
       const hu3 = wp(M.head).sub(wp(M.neck || M.head)).normalize(), Hc3 = wp(M.head).addScaledVector(hu3, 11).add(off2), Fh3 = J.F.clone(); Fh3.y = 0; Fh3.normalize();
       const dv = AV.grab.clone().sub(Hc3); dv.z = 0; const df = dv.dot(Fh3), dvert = dv.y;
-      if (Math.abs(dvert) < 19 && df < 19) off2.addScaledVector(Fh3, -(19 - df));
+      if (df < 19) off2.addScaledVector(Fh3, -(19 - df) * smooth(21, 15, Math.abs(dvert)));
       root.position.add(off2); root.updateMatrixWorld(true);
     }
     for (const k of ["R", "L"]) G2[k].S0 = wp(M["ua" + k]);
@@ -8931,9 +8998,11 @@ function avPoseGLB(G, J) {
     if (bar2 && !G2.R.handDir && !G2.L.handDir) {
       const A = G2.R.g, B = G2.L.g, ab = B.clone().sub(A), t = Math.max(0, Math.min(1, Hc.clone().sub(A).dot(ab) / Math.max(ab.lengthSq(), 1e-6)));
       const q = A.clone().addScaledVector(ab, t), dd = Hc.distanceTo(q);
-      if (dd < R) { const push = Math.sqrt(Math.max(0, R * R - Hc.clone().sub(q).addScaledVector(Fh, -Hc.clone().sub(q).dot(Fh)).lengthSq())) + Hc.clone().sub(q).dot(Fh) + 2; if (push > 0) { A.addScaledVector(Fh, push); B.addScaledVector(Fh, push); } }
+      if (dd < R + 2) {   /* desplazamiento mínimo y continuo: hacia adelante si la barra va delante de la cara, hacia atrás si va detrás */
+        const v = Hc.clone().sub(q), vf = v.dot(Fh), D = Math.max(0, (R + 2) * (R + 2) - v.lengthSq() + vf * vf), push = vf >= 0 ? vf - Math.sqrt(D) : vf + Math.sqrt(D);
+        A.addScaledVector(Fh, push); B.addScaledVector(Fh, push); }
     }
-    for (const k of ["R", "L"]) { const o = G2[k]; if (o.handDir) continue; const v = o.g.clone().sub(Hc), dl = v.length(); if (dl < R - 3) { v.addScaledVector(Fh, R * 0.6).normalize(); o.g.copy(Hc).addScaledVector(v, R - 3); } }
+    for (const k of ["R", "L"]) { const o = G2[k]; if (o.handDir) continue; const v = o.g.clone().sub(Hc), dl = v.length(); if (dl < R - 3 && dl > 1e-3) o.g.copy(Hc).addScaledVector(v, (R - 3) / dl); }
   }
   for (const [s, n2] of [["R", 1], ["L", 2]]) {
     const sh = J["sh" + n2], el = J["el" + n2], hd = J["hd" + n2];
@@ -8942,15 +9011,32 @@ function avPoseGLB(G, J) {
       /* IK: la mano del modelo va al mismo punto del mundo que la mano del dibujo (donde están la barra, el piso
          o el banco). Si no alcanza —sus brazos son más cortos— el brazo queda estirado apuntando a ese punto. */
       const Ew = wp(M["fa" + s]), a = S0.distanceTo(Ew), b = Ew.distanceTo(wp(M["hand" + s]));
-      const sd = hd.clone().sub(sh).normalize(), hint = el.clone().sub(sh); hint.addScaledVector(sd, -hint.dot(sd));
-      if (hint.lengthSq() < 1) hint.copy(tUp).negate();
+      /* dirección del codo: la del brazo del dibujo respecto a la línea hombro→mano del modelo; si está casi recto
+         se mantiene la del cuadro anterior (sin saltos) */
+      const ph = rig._hint || (rig._hint = {}), gd = g.clone().sub(S0).normalize();
+      const hint0 = el.clone().sub(sh); hint0.addScaledVector(gd, -hint0.dot(gd));
+      let pv = ph[s] ? ph[s].clone() : tUp.clone().negate(); pv.addScaledVector(gd, -pv.dot(gd)); if (pv.lengthSq() < 1e-6) { pv = tUp.clone().negate(); pv.addScaledVector(gd, -pv.dot(gd)); } pv.normalize();
+      const wH = smooth(1.5, 7, hint0.length()), hn = hint0.lengthSq() > 1e-8 ? hint0.clone().normalize() : pv.clone();
+      hn.addScaledVector(gd, -hn.dot(gd)); if (hn.lengthSq() < 1e-6) hn.copy(pv); hn.normalize();
+      /* si el codo del dibujo salta al otro lado de golpe (pasa con el brazo muy doblado), se mantiene el lado anterior */
+      if (ph[s] && hn.dot(pv) < -0.2) hn.copy(pv);
+      const hint = pv.multiplyScalar(1 - wH).addScaledVector(hn, wH); if (hint.lengthSq() < 1e-6) hint.copy(hn); hint.normalize(); ph[s] = hint.clone();
       let tgt;
       if (handDir) { tgt = g.clone().addScaledVector(handDir, -8); tgt.y += 2; }
-      else { const r0 = ik2(S0, g, a, b + 8, hint); tgt = g.clone().addScaledVector(g.clone().sub(r0.E).normalize(), -8); }
-      const r = ik2(S0, tgt, a, b, hint); ua = r.E.clone().sub(S0); fa = r.H.clone().sub(r.E);
+      else { /* la muñeca queda detrás del centro de la palma, en la dirección del antebrazo del dibujo (continua) */
+        const fd = hd.clone().sub(el); if (fd.lengthSq() < 1e-4) fd.copy(g).sub(S0); fd.normalize(); tgt = g.clone().addScaledVector(fd, -8); }
+      const r = ik2(S0, tgt, a, b, hint, s);
+      /* suavizado en el tiempo del codo y la muñeca (sólo mientras se reproduce): un cambio brusco se vuelve un giro rápido */
+      const sm3 = rig._ikS || (rig._ikS = {}), aS = AV.dtS > 0 ? 1 - Math.exp(-AV.dtS / 55) : 1;
+      if (sm3[s] && aS < 1) {
+        const pE = sm3[s].E.lerp(r.E, aS), pH = sm3[s].H.lerp(r.H, aS);
+        r.E.copy(S0).addScaledVector(pE.clone().sub(S0).normalize(), a); r.H.copy(r.E).addScaledVector(pH.clone().sub(r.E).normalize(), b);
+      }
+      sm3[s] = { E: r.E.clone(), H: r.H.clone() };
+      ua = r.E.clone().sub(S0); fa = r.H.clone().sub(r.E);
     }
     const axA = new T.Vector3().crossVectors(ua, fa).multiplyScalar(-1);
-    const sideA = axA.length() > 0.15 * ua.length() * fa.length() ? axA.normalize() : L;
+    const sideA = sideFor("A" + s, axA, ua.clone().normalize(), ua.length() * fa.length());
     avAim(rig, M["ua" + s], ua, sideA); avAim(rig, M["fa" + s], fa, sideA);
     const hdB = M["hand" + s], pn = hdB.userData && hdB.userData.palmN, rr = rig.rest.get(hdB);
     if (handDir && pn && rr) {   /* orienta la mano para que la palma mire al piso */
@@ -8984,13 +9070,74 @@ function avPoseGLB(G, J) {
   J.an1 = wp(M.ftR); J.an2 = wp(M.ftL);
 }
 function avToes(J, n) {
+  /* dirección de la punta del pie, continua entre cuadros (antes saltaba al cambiar de criterio) */
   const hp = J["hip" + n], kn = J["kn" + n], an = J["an" + n];
+  const sm = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
   const shinUp = kn.clone().sub(an).normalize(), knv = kn.clone().sub(hp.clone().add(an).multiplyScalar(0.5));
-  let toes = null;
-  for (const cand of [knv, J.F, an.clone().sub(J.H)]) { const q = avPerp(cand.clone(), shinUp); if (q.length() > 2.5 || (cand === J.F && q.length() > 0.35)) { toes = q.normalize(); break; } }
-  if (!toes) toes = J.F.clone();
-  if (an.y < 12 && Math.abs(shinUp.y) > 0.5) { toes.y = 0; if (toes.lengthSq() < 1e-4) toes.copy(J.F); toes.y = 0; toes.normalize(); }
+  const qK = avPerp(knv, shinUp), qF = avPerp(J.F.clone(), shinUp), qD = avPerp(new window.T3.Vector3(0, -1, 0), shinUp);
+  /* con la tibia casi paralela al frente (rodilla muy arriba) la punta apunta hacia abajo, sin saltos */
+  const wF = sm(0.15, 0.45, qF.length());
+  let toes = (qF.lengthSq() > 1e-8 ? qF.clone().normalize() : qD.clone()).multiplyScalar(wF).addScaledVector(qD.lengthSq() > 1e-8 ? qD.clone().normalize() : J.F.clone(), 1 - wF);
+  if (toes.lengthSq() < 1e-6) toes = J.F.clone(); toes.normalize();
+  const wK = sm(1.5, 4, qK.length());
+  if (wK > 0 && qK.lengthSq() > 1e-6) { const k = qK.clone().normalize(); if (k.dot(toes) < -0.2) k.negate(); toes.multiplyScalar(1 - wK).addScaledVector(k, wK); if (toes.lengthSq() < 1e-6) toes.copy(k); toes.normalize(); }
+  const wh = (1 - sm(8, 16, an.y)) * sm(0.4, 0.65, Math.abs(shinUp.y));
+  if (wh > 0) { const th = toes.clone(); th.y = 0; if (th.lengthSq() < 1e-4) { th.copy(J.F); th.y = 0; } if (th.lengthSq() > 1e-6) { th.normalize(); toes.lerp(th, wh).normalize(); } }
   return toes;
+}
+
+/* ---- Skinning con cuaterniones duales (DQS): al doblar caderas, rodillas y codos el volumen no se "desinfla"
+   como con el skinning lineal; los glúteos y las articulaciones mantienen su forma ---- */
+const AV_DQ_PARS = `
+vec4 avM2Q(mat3 m) {
+  float tr = m[0][0] + m[1][1] + m[2][2]; vec4 q;
+  if (tr > 0.0) { float s = sqrt(tr + 1.0) * 2.0; q = vec4((m[1][2] - m[2][1]) / s, (m[2][0] - m[0][2]) / s, (m[0][1] - m[1][0]) / s, 0.25 * s); }
+  else if (m[0][0] > m[1][1] && m[0][0] > m[2][2]) { float s = sqrt(1.0 + m[0][0] - m[1][1] - m[2][2]) * 2.0; q = vec4(0.25 * s, (m[1][0] + m[0][1]) / s, (m[2][0] + m[0][2]) / s, (m[1][2] - m[2][1]) / s); }
+  else if (m[1][1] > m[2][2]) { float s = sqrt(1.0 + m[1][1] - m[0][0] - m[2][2]) * 2.0; q = vec4((m[1][0] + m[0][1]) / s, 0.25 * s, (m[2][1] + m[1][2]) / s, (m[2][0] - m[0][2]) / s); }
+  else { float s = sqrt(1.0 + m[2][2] - m[0][0] - m[1][1]) * 2.0; q = vec4((m[2][0] + m[0][2]) / s, (m[2][1] + m[1][2]) / s, 0.25 * s, (m[0][1] - m[1][0]) / s); }
+  return normalize(q);
+}
+vec4 avQMul(vec4 a, vec4 b) { return vec4(a.w * b.xyz + b.w * a.xyz + cross(a.xyz, b.xyz), a.w * b.w - dot(a.xyz, b.xyz)); }
+void avDQ(mat4 bm, out vec4 r, out vec4 d) {
+  mat4 m = bindMatrixInverse * bm * bindMatrix;
+  vec3 c0 = m[0].xyz, c1 = m[1].xyz, c2 = m[2].xyz;
+  float sc = (length(c0) + length(c1) + length(c2)) / 3.0;
+  r = avM2Q(mat3(c0 / sc, c1 / sc, c2 / sc));
+  d = 0.5 * avQMul(vec4(m[3].xyz, 0.0), r);
+}`;
+const AV_DQ_BASE = `
+#ifdef USE_SKINNING
+  mat4 boneMatX = getBoneMatrix( skinIndex.x ); mat4 boneMatY = getBoneMatrix( skinIndex.y );
+  mat4 boneMatZ = getBoneMatrix( skinIndex.z ); mat4 boneMatW = getBoneMatrix( skinIndex.w );
+  vec4 r0, d0, r1, d1, r2, d2, r3, d3;
+  avDQ(boneMatX, r0, d0); avDQ(boneMatY, r1, d1); avDQ(boneMatZ, r2, d2); avDQ(boneMatW, r3, d3);
+  float w1 = skinWeight.y * (dot(r0, r1) < 0.0 ? -1.0 : 1.0), w2 = skinWeight.z * (dot(r0, r2) < 0.0 ? -1.0 : 1.0), w3 = skinWeight.w * (dot(r0, r3) < 0.0 ? -1.0 : 1.0);
+  vec4 dqR = r0 * skinWeight.x + r1 * w1 + r2 * w2 + r3 * w3, dqD = d0 * skinWeight.x + d1 * w1 + d2 * w2 + d3 * w3;
+  float dqL = length(dqR); dqR /= dqL; dqD /= dqL;
+#endif`;
+const AV_DQ_NORMAL = `
+#ifdef USE_SKINNING
+  objectNormal = objectNormal + 2.0 * cross(dqR.xyz, cross(dqR.xyz, objectNormal) + dqR.w * objectNormal);
+  #ifdef USE_TANGENT
+    objectTangent = objectTangent + 2.0 * cross(dqR.xyz, cross(dqR.xyz, objectTangent) + dqR.w * objectTangent);
+  #endif
+#endif`;
+const AV_DQ_POS = `
+#ifdef USE_SKINNING
+  transformed = transformed + 2.0 * cross(dqR.xyz, cross(dqR.xyz, transformed) + dqR.w * transformed) + 2.0 * (dqR.w * dqD.xyz - dqD.w * dqR.xyz + cross(dqR.xyz, dqD.xyz));
+#endif`;
+function avUseDQS(root) {
+  root.traverse(o => {
+    if (!o.isSkinnedMesh || !o.material) return;
+    [].concat(o.material).forEach(m => {
+      if (m.userData.dqs) return; m.userData.dqs = true;
+      m.onBeforeCompile = sh => {
+        sh.vertexShader = sh.vertexShader.replace("#include <skinning_pars_vertex>", "#include <skinning_pars_vertex>\n#ifdef USE_SKINNING\n" + AV_DQ_PARS + "\n#endif")
+          .replace("#include <skinbase_vertex>", AV_DQ_BASE).replace("#include <skinnormal_vertex>", AV_DQ_NORMAL).replace("#include <skinning_vertex>", AV_DQ_POS);
+      };
+      m.customProgramCacheKey = () => "cf-dqs"; m.needsUpdate = true;
+    });
+  });
 }
 
 /* ================= Hoy ================= */
@@ -9741,7 +9888,7 @@ if ("serviceWorker" in navigator && (location.protocol === "https:" || location.
 }
 /* Aviso de versión nueva */
 (function () {
-  const BUILD = "20261120152456";
+  const BUILD = "20261120160307";
   if (location.protocol !== "https:" || window.claude) return;
   if (/[?&]v=\d+/.test(location.search)) history.replaceState(null, "", location.pathname + location.hash);
   let last = 0;
