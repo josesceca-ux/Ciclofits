@@ -8,7 +8,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="CicloFit">
-<meta name="ciclofit-build" content="20261120150350">
+<meta name="ciclofit-build" content="20261120152456">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
@@ -8426,6 +8426,8 @@ function avScene(P, J) {
   const tube = (a, b, r) => { const o = new T.Mesh(U, Mm); o.castShadow = true; g.add(o); const d = b.clone().sub(a), l = d.length() || 1e-3; d.divideScalar(l); let X = avPerp(new T.Vector3(1, 0, 0), d); if (X.lengthSq() < 1e-4) X = avPerp(new T.Vector3(0, 0, 1), d); avOrient(o, a.clone().add(b).multiplyScalar(0.5), X.normalize(), d, r, l, r); };
   const latOf = z => front ? J.W([100 + z, 0]).setY(0).setX(0) : new T.Vector3(0, 0, z);
   const rects = [], surf = []; g.userData.surf = surf;
+  /* barras vistas de punta (círculos pequeños): sus postes van en los extremos de la barra, no por el centro del cuerpo */
+  const barPts = front ? [] : [...svg.children].filter(e => e.tagName.toLowerCase() === "circle" && +e.getAttribute("r") < 6).map(e => [+e.getAttribute("cx"), +e.getAttribute("cy")]);
   for (const el of svg.children) {
     const tag = el.tagName.toLowerCase(), cls = el.getAttribute("class") || "";
     if (tag === "rect") {
@@ -8482,9 +8484,15 @@ function avScene(P, J) {
           wall.position.set(A.x - side * 8, Math.min(A.y, Bv.y) + (hgt + 30) / 2, 0); wall.receiveShadow = true; wall.castShadow = true; g.add(wall); g.userData.wallSide = -side; continue;
         }
       }
+      /* barras paralelas (fondos): la línea horizontal donde se apoyan las manos va a cada lado del cuerpo, con sus postes */
+      const parZ = !front && J.hd1 && segs.some(([a, b]) => Math.abs(a[1] - b[1]) < 1 && Math.abs(W(0, a[1]).y - J.hd1.y) < 8 && J.hd1.x >= Math.min(W(a[0], 0).x, W(b[0], 0).x) - 6 && J.hd1.x <= Math.max(W(a[0], 0).x, W(b[0], 0).x) + 6) ? (AV.glb ? 27 : Math.max(15, Math.abs(J.hd1.z) + 1)) : 0;
+      if (parZ) g.userData.parZ = { z: parZ, y: J.hd1.y };
       for (const [a, b] of segs) {
         const legLike = Math.abs(a[0] - b[0]) < 1 && Math.max(a[1], b[1]) >= 186 && rects.some(r => Math.abs(Math.min(a[1], b[1]) - (r.y + r.h)) < 3 && a[0] >= r.x - 2 && a[0] <= r.x + r.w + 2);
-        if (legLike) for (const z of [-11, 11]) tube(W(a[0], a[1]).add(latOf(z)), W(b[0], b[1]).add(latOf(z)), 1.5);
+        const bq = Math.abs(a[0] - b[0]) < 1 ? barPts.find(q => Math.abs(q[0] - a[0]) < 25 && q[1] >= Math.min(a[1], b[1]) - 8 && q[1] <= Math.max(a[1], b[1]) + 8) : null;
+        if (bq) for (const z of [-58, 58]) { tube(W(a[0], a[1]).add(latOf(z)), W(b[0], b[1]).add(latOf(z)), 1.6); if (Math.abs(bq[0] - a[0]) > 2) tube(W(a[0], bq[1]).add(latOf(z)), W(bq[0], bq[1]).add(latOf(z)), 1.4); }
+        else if (parZ) for (const z of [-parZ, parZ]) tube(W(a[0], a[1]).add(latOf(z)), W(b[0], b[1]).add(latOf(z)), 1.6);
+        else if (legLike) for (const z of [-11, 11]) tube(W(a[0], a[1]).add(latOf(z)), W(b[0], b[1]).add(latOf(z)), 1.5);
         else tube(W(a[0], a[1]), W(b[0], b[1]), 1.6);
       }
     } else if (tag === "circle" && !front && +el.getAttribute("r") < 6) {
@@ -8535,12 +8543,26 @@ function avOpen(host, ex, cap) {
   /* "lie": los ejercicios dibujados desde arriba (aperturas acostada en banco) se acuestan de verdad en 3D.
      Se posa sin girar y se gira sólo para dibujar, así el cálculo de la pose no cambia. */
   const lie = new T.Group(); scene.add(lie); const LIE = !!P.noFloor;
-  const lieOff = () => { if (!LIE) return; lie.rotation.z = 0; lie.position.y = 0; lie.updateMatrixWorld(true); };
-  const lieOn = () => { if (!LIE) return; lie.rotation.z = Math.PI / 2; lie.position.y = 64; lie.updateMatrixWorld(true); };
+  /* OFF: el tobillo del modelo .glb está más alto sobre la suela que el del dibujo; todo sube un poco para que
+     las zapatillas pisen el piso (y no se hundan), y los equipos que tocan el piso se alargan hacia abajo */
+  const OFF = G && !LIE ? 8 : 0; AV.floorY = -OFF;
+  const lieOff = () => { if (!LIE && !OFF) return; lie.rotation.z = 0; lie.position.y = 0; lie.updateMatrixWorld(true); };
+  const lieOn = () => { if (LIE) { lie.rotation.z = Math.PI / 2; lie.position.y = 64; } else if (OFF) lie.position.y = OFF; else return; lie.updateMatrixWorld(true); };
   const B = G ? null : avBody(skin); if (B) { avMuscles(B, ex); lie.add(B.g); } else lie.add(G.gltf.scene);
   const props = avProps(ex, P); lie.add(props.g);
   AV.wallMode = /pared/.test(ex.id || "");
-  const J0 = avPose(P, ex, 0, 0), sceneG = avScene(P, J0); AV.surf = sceneG.userData.surf || []; AV.grab = sceneG.userData.grab || null; AV.bars = sceneG.userData.bars || []; lie.add(sceneG);
+  const J0 = avPose(P, ex, 0, 0), sceneG = avScene(P, J0); AV.surf = sceneG.userData.surf || []; AV.grab = sceneG.userData.grab || null; AV.bars = sceneG.userData.bars || []; AV.parZ = sceneG.userData.parZ || null; lie.add(sceneG);
+  if (OFF) {
+    sceneG.updateMatrixWorld(true);
+    sceneG.children.forEach(m => {
+      if (!m.isMesh || !m.geometry) return; const bb = new T.Box3().setFromObject(m);
+      if (bb.min.y > 1.5 || bb.max.y - bb.min.y < 2) return;
+      m.geometry.computeBoundingBox(); const gb = m.geometry.boundingBox, d = new T.Vector3(0, 1, 0).applyQuaternion(m.quaternion);
+      if (Math.abs(d.y) < 0.35) return;
+      const gh = (gb.max.y - gb.min.y) * m.scale.y, e = OFF / Math.abs(d.y);
+      m.scale.y *= (gh + e) / gh; m.position.addScaledVector(d, -Math.sign(d.y) * e / 2);
+    });
+  }
   if (LIE) {   /* banco acostado: se le ponen patas hasta el piso */
     let board = null, bb = null;
     sceneG.children.forEach(o => { if (!o.isMesh) return; const b = new T.Box3().setFromObject(o), sz = b.getSize(new T.Vector3()); if (!bb || sz.y > bb.getSize(new T.Vector3()).y) { board = o; bb = b; } });
@@ -8661,6 +8683,7 @@ function avRigFind(root) {
     M["cla" + s] = pick(/^(shoulder|clavicle|collar)$/, s); M["half" + s] = pick(/^armhalf$/, s);
     M["fing1" + s] = pick(/^handfingers1$/, s); M["fing2" + s] = pick(/^handfingers2$/, s); M["hair" + s] = pick(/^hairside$/, s);
     M["ua" + s] = pick(/^(arm|upperarm)$/, s); M["fa" + s] = pick(/^(forearm|lowerarm)$/, s); M["hand" + s] = pick(/^(hand|wrist)$/, s);
+    M["knee" + s] = pick(/^kneehalf$/, s);
     M["th" + s] = pick(/^(upleg|upperleg|thigh)$/, s); M["sh" + s] = pick(/^(leg|lowerleg|calf|shin)$/, s); M["ft" + s] = pick(/^(foot|ankle)$/, s); M["toe" + s] = pick(/^(toebase|toe|toes|ball)$/, s);
   }
   const need = ["hips", "head", "uaL", "uaR", "faL", "faR", "handL", "handR", "thL", "thR", "shL", "shR", "ftL", "ftR"];
@@ -8697,7 +8720,44 @@ function avRigFind(root) {
     setRest(M["ft" + s], M["toe" + s] || null, fwd);
   }
   const legLen = wp(M.thL).distanceTo(wp(M.shL)) + wp(M.shL).distanceTo(wp(M.ftL));
-  return { M, rest, legLen, root };
+  /* puntos de la suela de cada zapatilla (en el espacio del hueso del pie), para que no se hundan en el piso */
+  const sole = {};
+  try {
+    let sk = null; root.traverse(o => { if (o.isSkinnedMesh && !sk) sk = o; });
+    if (sk) {
+      const pos = sk.geometry.attributes.position, si = sk.geometry.attributes.skinIndex, sw = sk.geometry.attributes.skinWeight, bones = sk.skeleton.bones;
+      for (const s of ["L", "R"]) {
+        const bi = bones.indexOf(M["ft" + s]); if (bi < 0) continue;
+        const pts = [];
+        for (let i = 0; i < pos.count; i++) { let w = 0; for (let k = 0; k < 4; k++) if (si.getComponent(i, k) === bi) w += sw.getComponent(i, k); if (w > 0.95) pts.push(new T.Vector3().fromBufferAttribute(pos, i)); }
+        if (pts.length < 10) continue;
+        pts.sort((a, b) => a.y - b.y); const low = pts.slice(0, Math.max(8, Math.round(pts.length * 0.12)));
+        const pick = [low.reduce((a, b) => (b.z < a.z ? b : a)), low.reduce((a, b) => (b.z > a.z ? b : a)), low.reduce((a, b) => (b.x < a.x ? b : a)), low.reduce((a, b) => (b.x > a.x ? b : a))];
+        const toe = pts.reduce((a, b) => (b.z > a.z ? b : a)); pick.push(toe);
+        const inv = sk.skeleton.boneInverses[bi]; sole[s] = pick.map(q => q.clone().applyMatrix4(inv));
+      }
+      /* tronco y piernas: puntos extremos de cada hueso (para cuando está acostada en el piso) */
+      sole.body = [];
+      for (const b of [M.hips, ...M.spines, M.thL, M.thR, M.shL, M.shR]) {
+        const bi = bones.indexOf(b); if (bi < 0) continue; const pts = [];
+        for (let i = 0; i < pos.count; i += 2) { let w = 0; for (let k = 0; k < 4; k++) if (si.getComponent(i, k) === bi) w += sw.getComponent(i, k); if (w > 0.8) pts.push(new T.Vector3().fromBufferAttribute(pos, i)); }
+        if (pts.length < 6) continue;
+        const ext = [(a, c) => c.z < a.z, (a, c) => c.z > a.z, (a, c) => c.x < a.x, (a, c) => c.x > a.x, (a, c) => c.y < a.y].map(f => pts.reduce((a, c) => (f(a, c) ? c : a)));
+        ext.forEach(q => sole.body.push({ b, p: q.clone().applyMatrix4(sk.skeleton.boneInverses[bi]) }));
+      }
+      /* cabeza (con el pelo): puntos extremos, para que acostada no se meta en el piso */
+      const hi = bones.indexOf(M.head);
+      if (hi >= 0) {
+        const pts = [];
+        for (let i = 0; i < pos.count; i += 2) { let w = 0; for (let k = 0; k < 4; k++) if (si.getComponent(i, k) === hi) w += sw.getComponent(i, k); if (w > 0.9) pts.push(new T.Vector3().fromBufferAttribute(pos, i)); }
+        if (pts.length > 20) {
+          const ext = [(a, b) => b.z < a.z, (a, b) => b.z > a.z, (a, b) => b.y > a.y, (a, b) => b.x < a.x, (a, b) => b.x > a.x, (a, b) => b.y - b.z * 0.7 > a.y - a.z * 0.7, (a, b) => -b.y - b.z > -a.y - a.z].map(f => pts.reduce((a, b) => (f(a, b) ? b : a)));
+          sole.head = ext.map(q => q.clone().applyMatrix4(sk.skeleton.boneInverses[hi]));
+        }
+      }
+    }
+  } catch (e) {}
+  return { M, rest, legLen, root, sole };
 }
 function avBasisQ(dir, side) {
   const T = window.T3, d = dir.clone().normalize(); let s = side.clone().addScaledVector(d, -side.dot(d));
@@ -8741,13 +8801,15 @@ function avPoseGLB(G, J) {
   }
   const pr = J.prop || "", hang = !!(AV.grab && J.hd1 && Math.abs(J.hd1.y - AV.grab.y) < 14);
   const onBar = (AV.bars || []).some(b => J.hd1 && Math.hypot(J.hd1.x - b.x, J.hd1.y - b.y) < 10);
-  const grip = hang || onBar || /^(db|bb|kb|bar|cab|hdl|rope|wheel|band)/.test(pr) && !/^(cableFoot|cabAnk)$/.test(pr);
+  const onPar = !!(AV.parZ && J.hd1 && Math.abs(J.hd1.y - AV.parZ.y) < 12);
+  const grip = hang || onBar || onPar || /^(db|bb|kb|bar|cab|hdl|rope|wheel|band)/.test(pr) && !/^(cableFoot|cabAnk)$/.test(pr);
   /* piernas: lado 1 (cerca de la cámara) es el derecho del modelo */
   for (const [s, n2] of [["R", 1], ["L", 2]]) {
     const hp = J["hip" + n2], kn = J["kn" + n2], an = J["an" + n2];
     const th = kn.clone().sub(hp), sn = an.clone().sub(kn), axL = new T.Vector3().crossVectors(th, sn);
     const sideL = axL.length() > 0.15 * th.length() * sn.length() ? axL.normalize() : L;
     avAim(rig, M["th" + s], th, sideL); avAim(rig, M["sh" + s], sn, sideL);
+    const kb = M["knee" + s]; if (kb && kb.parent === M["sh" + s].parent) { kb.quaternion.identity().slerp(M["sh" + s].quaternion, 0.5); kb.updateMatrixWorld(true); }
     avAim(rig, M["ft" + s], J["toes" + n2] || J.F, L);
   }
   /* coloca el modelo: pies al piso si está de pie, si no, cadera en su lugar */
@@ -8755,8 +8817,55 @@ function avPoseGLB(G, J) {
   const wp = b => b.getWorldPosition(new T.Vector3());
   const hipsW = wp(M.hips), target = J.H.clone();
   const off = target.sub(hipsW); root.position.add(off); root.updateMatrixWorld(true);
-  const standing = J.an1.y < 14 && J.an2.y < 14 && J.up.y > 0.5;
+  const standing = J.an1.y < 14 && J.an2.y < 14 && J.H.y > 40;   /* pies en el piso y cadera arriba (aunque el tronco esté inclinado) */
   if (standing) { const fy = Math.min(wp(M.ftL).y, wp(M.ftR).y); root.position.y += J.an1.y * 0.5 + J.an2.y * 0.5 - fy; root.updateMatrixWorld(true); }
+  /* zapatillas: si la punta o el talón se hunden en el piso, el pie se gira en el tobillo (de puntitas o con el talón)
+     y, si aun así no alcanza y no está de pie, el cuerpo sube lo justo */
+  const soleY = s => { const ft = M["ft" + s], sm = rig.sole && rig.sole[s]; if (!sm) return null; ft.updateMatrixWorld(true); return sm.map(q => q.clone().applyMatrix4(ft.matrixWorld).y); };
+  const soleLow = s => { const ys = soleY(s); return ys ? Math.min(...ys) : 1e9; };
+  const fl = AV.floorY || 0;   /* altura del piso mientras se calcula la pose */
+  const bodyLow = () => {
+    let mn = 1e9;
+    if (rig.sole && rig.sole.body) for (const o of rig.sole.body) { o.b.updateMatrixWorld(true); mn = Math.min(mn, o.p.clone().applyMatrix4(o.b.matrixWorld).y); }
+    if (rig.sole && rig.sole.head) { M.head.updateMatrixWorld(true); for (const q of rig.sole.head) mn = Math.min(mn, q.clone().applyMatrix4(M.head.matrixWorld).y); }
+    return mn;
+  };
+  /* cabeza: si se mete en el piso (acostada), se recoge un poco el mentón */
+  const headTuck = () => {
+    if (!(rig.sole && rig.sole.head)) return;
+    const hb = M.head, hl = () => { hb.updateMatrixWorld(true); let mn = 1e9; for (const q of rig.sole.head) mn = Math.min(mn, q.clone().applyMatrix4(hb.matrixWorld).y); return mn; };
+    let best = hl(); if (best >= fl - 0.5) return;
+    const wq0 = hb.getWorldQuaternion(new T.Quaternion()), pinv = hb.parent.getWorldQuaternion(new T.Quaternion()).invert(); let bq = hb.quaternion.clone();
+    outerH: for (const th of [0.1, 0.2, 0.3, 0.42, 0.55]) for (const sg of [1, -1]) {
+      hb.quaternion.copy(pinv.clone().multiply(new T.Quaternion().setFromAxisAngle(L, sg * th)).multiply(wq0));
+      const m1 = hl(); if (m1 > best + 0.05) { best = m1; bq = hb.quaternion.clone(); } if (best >= fl - 0.3) break outerH;
+    }
+    hb.quaternion.copy(bq); hb.updateMatrixWorld(true);
+  };
+  {
+    if (!standing && J.H.y < 16) {
+      /* sentada o acostada en el piso: el punto más bajo (cuerpo, cabeza o zapatillas) queda justo en el piso */
+      headTuck(); const low = Math.min(bodyLow(), soleLow("L"), soleLow("R"));
+      if (low > fl - 40 && low < fl + 30) { root.position.y += Math.max(-10, Math.min(fl - low, 14)); root.updateMatrixWorld(true); }
+    } else {
+      /* apoyada en las puntas (plancha, zancada): si la punta de la zapatilla se hunde, el pie se pone de puntitas */
+      for (const s of ["L", "R"]) {
+        const ys = soleY(s); if (!ys) continue;
+        const heel = ys[0], toe = Math.min(ys[1], ys[4]);
+        if (toe > fl - 1 || toe > heel - 2) continue;
+        const ft = M["ft" + s], wq0 = ft.getWorldQuaternion(new T.Quaternion()), pinv = ft.parent.getWorldQuaternion(new T.Quaternion()).invert();
+        let best = Math.min(...ys), bq = ft.quaternion.clone();
+        outerF: for (const th of [0.12, 0.25, 0.4, 0.55, 0.7, 0.9]) for (const sg of [1, -1]) {
+          ft.quaternion.copy(pinv.clone().multiply(new T.Quaternion().setFromAxisAngle(L, sg * th)).multiply(wq0));
+          const m1 = soleLow(s); if (m1 > best + 0.05) { best = m1; bq = ft.quaternion.clone(); } if (best >= fl - 0.3) break outerF;
+        }
+        ft.quaternion.copy(bq); ft.updateMatrixWorld(true);
+      }
+      if (!standing) headTuck();
+      const low = Math.min(soleLow("L"), soleLow("R"), J.H.y < 30 ? bodyLow() : 1e9);
+      if (!standing && low < fl - 0.5 && low > fl - 40) { root.position.y += Math.min(fl - low, 14); root.updateMatrixWorld(true); }
+    }
+  }
   /* brazos. Con mancuernas/barras en la mano basta la dirección del dibujo (el implemento sigue a la mano).
      Cuando la mano se apoya (piso, banco) o agarra una barra fija (sentadilla, hip thrust), se calcula con IK
      para que la mano del modelo llegue a ese punto aunque sus brazos midan distinto que los del dibujo. */
@@ -8785,6 +8894,7 @@ function avPoseGLB(G, J) {
     } else {
       g = barC ? barC.clone() : hd.clone();
       if (barC) g.z += Math.sign(hd.z - barC.z || (n2 === 1 ? 1 : -1)) * barW;
+      else if (onPar) { g.z = Math.sign(hd.z || (n2 === 1 ? 1 : -1)) * AV.parZ.z; g.y = AV.parZ.y + 2; }
       else {   /* brazos por arriba: un poco hacia afuera */
         const elevA = Math.acos(Math.max(-1, Math.min(1, -g.clone().sub(S0).normalize().dot(tUp))));
         const kO = Math.max(0, Math.min(1, (elevA - 1.4) / 1.0));
@@ -9198,6 +9308,8 @@ function openExercise(id) {
     </section>
   </div>`, sh => {
     if (use3d) { const h = $("#av3d", sh); try { avOpen(h, ex, $("#avCap", sh)); } catch (e) { console.warn(e); h.innerHTML = `<p class="small muted" style="padding:20px">No se pudo mostrar el avatar 3D en este equipo.</p>`; } }
+    /* si el modelo 3D todavía se está descargando, al llegar se cambia solo a 3D (si la ficha sigue abierta) */
+    else if (!AV.pref && av3dOK() && PAT[ex.pat] && !AV.glbDone) { const pg = avLoadGLB(); if (pg) pg.then(g => { if (g && sh.isConnected) openExercise(id); }); }
     const vi = $(".vid img", sh);
     if (vi) vi.addEventListener("load", () => { if (vi.naturalWidth <= 120 && !vi.dataset.f) { vi.dataset.f = 1; vi.src = vi.src.replace("maxresdefault", "hqdefault"); } });
     $("#vidForm", sh).addEventListener("submit", e => {
@@ -9629,7 +9741,7 @@ if ("serviceWorker" in navigator && (location.protocol === "https:" || location.
 }
 /* Aviso de versión nueva */
 (function () {
-  const BUILD = "20261120150350";
+  const BUILD = "20261120152456";
   if (location.protocol !== "https:" || window.claude) return;
   if (/[?&]v=\d+/.test(location.search)) history.replaceState(null, "", location.pathname + location.hash);
   let last = 0;
