@@ -132,13 +132,58 @@ input[type=checkbox],input[type=radio]{accent-color:var(--olive)}
 .wd b{display:block;font-family:var(--disp);font-stretch:112%;font-size:18px;color:var(--ink);font-weight:800}
 .wd .bar{height:8px;border-radius:4px;margin:6px 2px 6px}
 .wd.today b{text-decoration:underline;text-decoration-thickness:2.5px;text-underline-offset:4px}
+.wnav{display:flex;align-items:center;gap:2px}
+.iconbtn{width:40px;height:40px;border-radius:12px;border:0;background:transparent;color:var(--ink);font-size:24px;line-height:1;display:grid;place-items:center;padding:0}
+.iconbtn:active{background:var(--line2)}
+.wsegs{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:6px;font-size:13px;color:var(--ink2)}
+.wseg{display:inline-flex;align-items:center;gap:6px}
+.wlist{margin-top:12px;background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:2px 14px}
+.wrow{display:grid;grid-template-columns:40px 5px 1fr auto;gap:12px;align-items:center;width:100%;min-height:62px;padding:10px 0;background:none;border:0;border-top:1px solid var(--line2);text-align:left;color:var(--ink)}
+.wrow:first-child{border-top:0}
+.wdd{text-align:center;font-size:12px;color:var(--ink2);line-height:1.15}
+.wdd b{display:block;font-family:var(--disp);font-stretch:112%;font-size:19px;color:var(--ink);font-weight:800}
+.wrow.today .wdd span{color:var(--olive);font-weight:700}
+.wrow.today .wdd b{text-decoration:underline;text-decoration-thickness:2.5px;text-underline-offset:4px}
+.wbar{width:5px;align-self:stretch;border-radius:3px;min-height:38px}
+.wn{font-weight:700;line-height:1.25}
+.ws{font-size:13px;color:var(--ink2);margin-top:2px;line-height:1.3}
+.wrow.wrest{min-height:50px;padding:7px 0}
+.wrow.wrest .wbar{min-height:30px;opacity:.55}
+.wrow.wrest .wn{font-weight:400;color:var(--ink2)}
+.wrow.past .wn{color:var(--ink2)}
+.wrow .chev{color:var(--ink3);font-size:20px}
+.wst.ok{width:26px;height:26px;border-radius:50%;background:var(--olive);color:#fff;display:grid;place-items:center;font-size:14px;font-weight:800}
+.wst.miss{font-size:12px;color:var(--ink3);text-align:right;max-width:64px;line-height:1.2}
+.donebox{margin-top:12px;padding:12px 14px;border-radius:14px;background:var(--olive-t);color:var(--ink)}
+.restcard h2{margin-top:2px}
+.foodhoy .fq{margin:8px 0 0;padding-left:20px}
+.foodhoy .fq li{margin-top:4px}
+.fcard{border-left:6px solid var(--fc,var(--olive))}
+.focus{margin-top:14px;padding-top:12px;border-top:1px solid var(--line2)}
+.focus b{display:block;font-size:16px}
+.focus p{margin:2px 0 0;font-size:15px;color:var(--ink2)}
+.fl{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.fl span{font-size:13px;border-radius:999px;padding:3px 10px;background:var(--olive-t);color:var(--ink)}
+.tipbox{margin:0;padding:12px 14px;border-radius:14px;background:var(--olive-t);color:var(--ink);font-size:15px}
+.meals{margin-top:8px;background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:2px 16px}
+.meal{display:grid;grid-template-columns:92px 1fr;gap:10px;padding:12px 0;border-top:1px solid var(--line2)}
+.meal:first-child{border-top:0}
+.meal b{font-size:14px;padding-top:1px}
+.meal ul.plain{margin:0;padding-left:16px;font-size:15px}
+.meal ul.plain li:first-child{margin-top:0}
+.pbig{font-family:var(--disp);font-stretch:112%;font-weight:800;font-size:32px;margin-top:8px;line-height:1.1}
+.shop .sg{margin:16px 0 2px;font-size:13px;color:var(--ink2);font-weight:700}
+.shop .si{display:flex;align-items:center;gap:12px;min-height:44px;border-top:1px solid var(--line2);cursor:pointer}
+.shop .si input{width:22px;height:22px;margin:0;accent-color:var(--olive);flex:none}
+.shop .si.ok span{text-decoration:line-through;color:var(--ink3)}
+@media (max-width:360px){ nav.tabs{padding-left:2px;padding-right:2px} nav.tabs a{font-size:10.5px;letter-spacing:-.01em} }
 .sig{display:flex;gap:2px;justify-content:center;align-items:flex-end;height:16px}
 .sig i{width:4px;border-radius:1.5px;background:var(--line)}
 .sig i.on{background:var(--ink)}
 
 /* Tabs */
 nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--paper);border-top:1px solid var(--line);padding:4px 6px calc(4px + env(safe-area-inset-bottom));z-index:20}
-nav.tabs .in{display:grid;grid-template-columns:repeat(5,1fr);max-width:560px;margin:0 auto}
+nav.tabs .in{display:grid;grid-template-columns:repeat(6,1fr);max-width:560px;margin:0 auto}
 nav.tabs a{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:12px;color:var(--ink3);padding:7px 0 5px;text-decoration:none;min-height:54px;border-radius:10px}
 nav.tabs a svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 nav.tabs a[aria-current="page"]{color:var(--ink);font-weight:700}
@@ -435,6 +480,7 @@ table.t td.num,table.t th.num{text-align:right;font-variant-numeric:tabular-nums
     <a href="#hoy" data-tab="hoy"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path class="acc" d="M12 4a8 8 0 0 1 8 8"/><circle cx="12" cy="12" r="1.6"/></svg>Hoy</a>
     <a href="#ciclo" data-tab="ciclo"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path class="acc" d="M8 14.5h3"/></svg>Ciclo</a>
     <a href="#ejercicios" data-tab="ejercicios"><svg viewBox="0 0 24 24"><path d="M6.5 8v8M17.5 8v8M3.5 10v4M20.5 10v4"/><path class="acc" d="M6.5 12h11"/></svg>Rutinas</a>
+    <a href="#comida" data-tab="comida"><svg viewBox="0 0 24 24"><path d="M3.5 12h17a8.5 8.5 0 0 1-17 0z"/><path d="M9 20.5h6"/><path class="acc" d="M9.5 8.5c-.8-1 .8-2 0-3.5M14.5 8.5c-.8-1 .8-2 0-3.5"/></svg>Comida</a>
     <a href="#progreso" data-tab="progreso"><svg viewBox="0 0 24 24"><path d="M4 19h16"/><path class="acc" d="M5 15l4-4 3 3 6-7"/></svg>Progreso</a>
     <a href="#perfil" data-tab="perfil"><svg viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.5"/><path d="M5 20c1.2-3.6 3.8-5.5 7-5.5s5.8 1.9 7 5.5"/></svg>Perfil</a>
   </div>
@@ -1348,7 +1394,7 @@ const RCATS = ["Fuerza", "Glúteos", "Mancuernas", "Casa", "Core", "Cardio", "Mo
 
 /* ================= Estado y guardado ================= */
 const LS_KEY = "ciclofit:v1", LS_W = "ciclofit:w:v1", LS_DRAFT = "ciclofit:draft:v1";
-const defaultState = () => ({ v: 1, updatedAt: 0, profile: null, periods: [], checkins: {}, weights: [], videos: {}, rot: 0 });
+const defaultState = () => ({ v: 1, updatedAt: 0, profile: null, periods: [], checkins: {}, weights: [], videos: {}, rot: 0, plan: {}, compras: null });
 let state = defaultState();
 let workouts = [];
 function loadLocal() {
@@ -1546,11 +1592,124 @@ function nextSessionKey() {
   return sp[(state.rot || 0) % sp.length];
 }
 let sessionOverride = null;
+/* ================= Plan semanal por fase ================= */
+const WD_DEFAULT = { 2: [1, 4], 3: [1, 3, 5], 4: [1, 2, 4, 5], 5: [1, 2, 3, 5, 6], 6: [1, 2, 3, 4, 5, 6] };
+const DIAS_3 = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"], DIAS_L = ["D", "L", "M", "X", "J", "V", "S"];
+const SLOT_TYPE = { inferior: "L", superior: "U", gluteos: "G", completoA: "F", completoB: "F", cardioCore: "C" };
+/* Para cada tipo de día (pierna, tren superior, glúteos, cuerpo completo, cardio) y cada fase, rutinas en orden de preferencia */
+const PLANMAP = {
+  L: { menstrual: ["menFuerzaSuave", "menGluteo"], folicular: ["inferior", "piernaCuad", "inferiorB", "pierna5x5"], ovulatoria: ["legDay", "piernaPotencia", "inferiorC"],
+    lutea: ["inferiorB", "manPierna", "piernaRodillas"], premenstrual: ["piernaRodillas", "cuadriceps"], hormonal: ["inferior", "inferiorB", "inferiorC"], casa: ["casaPierna", "casaPiernaFuerte", "exPierna15"] },
+  U: { menstrual: ["postura", "movHombros"], folicular: ["superior", "pushDay", "pullDay"], ovulatoria: ["pechoFuerte", "espaldaCompleta", "hombros"],
+    lutea: ["superiorB", "maquinasSup", "manSuperior"], premenstrual: ["maquinasSup", "postura"], hormonal: ["superior", "superiorB", "pushDay"], casa: ["casaSuperior", "casaEmpuje", "casaPostura"] },
+  G: { menstrual: ["menGluteo", "suavePeriodo"], folicular: ["gluteos", "gluteoA", "gluteoMaq"], ovulatoria: ["ovGluteo", "gluteoPesado", "gluteoA"],
+    lutea: ["lutGluteo", "gluteoB", "gluteoC"], premenstrual: ["gluteoMedioB", "gluteoPausa"], hormonal: ["gluteos", "gluteoB", "gluteoC"], casa: ["casaGluteo", "casaGluteoMedio", "casaGluteoAbs"] },
+  F: { menstrual: ["menFuerzaSuave", "suavePeriodo"], folicular: ["completoA", "folFuerza", "completoC"], ovulatoria: ["ovMarcas", "completoB", "fuerzaMax"],
+    lutea: ["lutVolumen", "lutMaquinas", "completoE"], premenstrual: ["preSuave", "completoE"], hormonal: ["completoA", "completoB", "completoD"], casa: ["casaTotalB", "casaTotalC", "casaExpress"] },
+  C: { menstrual: ["menCaminata", "menColicos"], folicular: ["hiit", "cardioCore", "folPotencia"], ovulatoria: ["ovHiit", "hiitB", "cardioCore"],
+    lutea: ["lutCardio", "cardioCore", "boxeoCore"], premenstrual: ["preCaminata", "bajoImpacto"], hormonal: ["cardioCore", "tresMaquinas", "boxeoCore"], casa: ["casaCardio", "casaHiit", "boxeoCore"] },
+};
+let wkOffset = 0;
+function weekStart(d) { const w = parseISO(d).getDay(); return addDays(d, -((w + 6) % 7)); }
+function weekNo(d) { return Math.floor(diffDays(weekStart(d), "2024-01-01") / 7); }
+const planOver = () => (state.plan && state.plan.over) || {};
+function trainDays() { const pl = state.plan || {}, p = state.profile || {}; return pl.dias && pl.dias.length ? pl.dias : (WD_DEFAULT[p.dias] || WD_DEFAULT[3]); }
+function isTrainDay(d) { const o = planOver()[d]; if (o === "rest") return false; if (o) return true; return trainDays().includes(parseISO(d).getDay()); }
+function choosePhaseRoutine(type, phase, seed) {
+  const m = PLANMAP[type] || PLANMAP.F, list = m[phase] || m.hormonal;
+  const base = Object.keys(SLOT_TYPE).find(k => SLOT_TYPE[k] === type);
+  const order = list.map((_, i) => list[(seed + i) % list.length]).concat(m.casa, [base]);
+  for (const k of order) if (SESSIONS[k] && routineOK(k)) return k;
+  return base;
+}
+function planDay(d) {
+  if (!state.profile) return null;
+  const info = cycleOn(d), lv = levelFor(d, info), o = planOver()[d];
+  if (!isTrainDay(d)) return { d, info, lv, rest: true, manual: o === "rest" };
+  if (o && o !== "train" && SESSIONS[o]) return { d, info, lv, key: o, manual: true };
+  if (lv.lvl === 1) return { d, info, lv, key: "recuperacion", low: true };
+  const ws = weekStart(d), tdays = [];
+  for (let i = 0; i < 7; i++) { const x = addDays(ws, i); if (isTrainDay(x)) tdays.push(x); }
+  const idx = Math.max(0, tdays.indexOf(d)), sp = SPLITS[clamp(tdays.length, 2, 6)];
+  const type = SLOT_TYPE[sp[idx % sp.length]] || "F";
+  return { d, info, lv, key: choosePhaseRoutine(type, info.key, weekNo(d) + idx), type, added: o === "train" };
+}
+function doneOn(d) { return workouts.find(w => w.d === d) || null; }
+function restSuggest(k) { return k === "menstrual" ? "menColicos" : k === "premenstrual" ? "preMovilidad" : "recuperacion"; }
+function recommendedFor(phase, n = 14) {
+  const spec = k => (SESSIONS[k].cat === "Por fase" ? 0 : 10) + SESSIONS[k].fases.length;
+  return Object.keys(SESSIONS).filter(k => SESSIONS[k].fases.includes(phase) && routineOK(k)).map((k, i) => [k, i]).sort((a, b) => spec(a[0]) - spec(b[0]) || a[1] - b[1]).slice(0, n).map(x => x[0]);
+}
+function setOver(d, v) {
+  state.plan = Object.assign({}, state.plan || {});
+  const o = Object.assign({}, state.plan.over || {}), lim = addDays(today(), -60);
+  Object.keys(o).forEach(k => { if (k < lim) delete o[k]; });
+  if (v == null) delete o[d]; else o[d] = v;
+  state.plan.over = o; commit();
+}
+const fmtMin = m => m >= 60 ? `${Math.floor(m / 60)} h${m % 60 ? " " + (m % 60) + " min" : ""}` : `${m} min`;
+const capFirst = s => s.charAt(0).toUpperCase() + s.slice(1);
+function renderWeek() {
+  const t = today(), ws = addDays(weekStart(t), 7 * wkOffset), rows = [], segs = [];
+  let nTrain = 0, mins = 0, nDone = 0;
+  for (let i = 0; i < 7; i++) {
+    const d = addDays(ws, i), pd = planDay(d), info = pd.info, dt = parseISO(d), done = doneOn(d), past = d < t;
+    if (!segs.length || segs[segs.length - 1].k !== info.key) segs.push({ k: info.key, a: d, b: d }); else segs[segs.length - 1].b = d;
+    let main, sub;
+    if (pd.rest) { main = done ? esc(done.sesName) : "Descanso"; sub = done ? "Entrenaste en tu día de descanso" : pd.manual ? "Lo marcaste como descanso" : ""; }
+    else { const plan = buildPlan(d, pd.key), m = estMin(plan.items); nTrain++; mins += m; main = esc(done ? done.sesName : plan.ses.name); sub = `${esc(LV[pd.lv.lvl].name)} · unos ${m} min${pd.manual ? " · cambiada por ti" : ""}`; }
+    if (done) nDone++;
+    const st = done ? `<span class="wst ok" aria-label="Hecho">✓</span>` : past && !pd.rest ? `<span class="wst miss">Sin registrar</span>` : `<span class="chev" aria-hidden="true">›</span>`;
+    rows.push(`<button class="wrow${d === t ? " today" : ""}${pd.rest && !done ? " wrest" : ""}${past && !done ? " past" : ""}" data-act="wkDay" data-d="${d}">
+      <div class="wdd"><span>${DIAS_3[dt.getDay()]}</span><b>${dt.getDate()}</b></div><div class="wbar${info.key === "premenstrual" ? " hatch" : ""}" style="background:${(PH[info.key] || PH.hormonal).color}"></div>
+      <div class="wmain"><div class="wn">${main}</div>${sub ? `<div class="ws">${sub}</div>` : ""}</div>${st}</button>`);
+  }
+  const we = addDays(ws, 6), a = parseISO(ws), b = parseISO(we);
+  const range = a.getMonth() === b.getMonth() ? `${a.getDate()}–${b.getDate()} de ${MESES[b.getMonth()]}` : `${a.getDate()} de ${MESES[a.getMonth()]} – ${b.getDate()} de ${MESES[b.getMonth()]}`;
+  const segTxt = segs.map(s => `<span class="wseg">${phaseSwatch(s.k)}${esc(PH[s.k].name)}${segs.length > 1 ? ` <span class="faint">${DIAS_3[parseISO(s.a).getDay()].toLowerCase()}${s.a !== s.b ? "–" + DIAS_3[parseISO(s.b).getDay()].toLowerCase() : ""}</span>` : ""}</span>`).join("");
+  const td = trainDays();
+  return `<section id="semana">
+    <div class="between"><h3>Tu semana</h3><div class="wnav"><button class="iconbtn" data-act="wkNav" data-v="-1" aria-label="Semana anterior">‹</button><span class="small">${esc(range)}</span><button class="iconbtn" data-act="wkNav" data-v="1" aria-label="Semana siguiente">›</button></div></div>
+    <p class="small muted" style="margin-top:4px">${nTrain} entrenamiento${nTrain === 1 ? "" : "s"} · unos ${fmtMin(mins)}${nDone ? ` · ${nDone} hecho${nDone === 1 ? "" : "s"}` : ""}</p>
+    <div class="wsegs">${segTxt}</div>
+    <div class="wlist">${rows.join("")}</div>
+    <details class="acc" style="margin-top:8px;border-bottom:0"><summary>Días que entrenas</summary>
+      <p class="small muted" style="margin:0 0 8px">Toca para elegir. Cada día recibe una rutina distinta según tu fase.</p>
+      <div class="chips" role="group" aria-label="Días de entrenamiento">${[1, 2, 3, 4, 5, 6, 0].map(w => `<button class="chip" data-act="wkDays" data-v="${w}" aria-pressed="${td.includes(w)}" aria-label="${DIAS[w]}">${DIAS_L[w]}</button>`).join("")}</div>
+    </details>
+  </section>`;
+}
+function openDay(d) {
+  const pd = planDay(d), info = pd.info, t = today(), done = doneOn(d), ph = PH[info.key] || PH.hormonal;
+  let html = `<button class="close" data-act="close" aria-label="Cerrar">×</button><h2 style="padding-right:46px">${esc(capFirst(fmtLong(d)))}</h2>
+    <p class="small" style="margin-top:6px">${phaseSwatch(info.key)} ${esc(ph.name)}${info.day && info.key !== "hormonal" ? ` · día ${info.day} de tu ciclo` : ""} · intensidad ${esc(LV[pd.lv.lvl].name.toLowerCase())}${pd.lv.has ? "" : " estimada"}</p>`;
+  if (done) html += `<p class="donebox">Ya registraste <b>${esc(done.sesName)}</b>: ${done.dur} min, esfuerzo ${done.rpe} de 10.</p>`;
+  if (pd.rest) {
+    html += `<p class="muted" style="margin-top:12px">${pd.manual ? "Marcaste este día como descanso." : "Hoy no está entre tus días de entrenamiento."} Descansar también es parte del plan: ahí el músculo se recupera y se hace más fuerte.</p>
+      <button class="btn ph block" data-act="dayTrain" data-d="${d}" style="margin-top:14px">Entrenar este día</button>
+      <button class="btn ghost block" data-act="routine" data-k="${restSuggest(info.key)}" style="margin-top:10px">Ver movilidad suave</button>`;
+  } else {
+    const plan = buildPlan(d, pd.key), s = plan.ses;
+    const why = pd.manual ? "Elegida por ti" : pd.low ? "Recuperación por tu check-in de hoy" : `Sugerida para tu fase ${ph.name.toLowerCase()}`;
+    html += `<div class="panel" style="margin-top:12px"><div class="small muted">${esc(why)}</div><h3 style="margin-top:2px">${esc(s.name)}</h3><p class="small muted" style="margin-top:4px">${esc(s.desc)}</p>
+      <div class="pills"><span class="pill">Unos ${estMin(plan.items)} min</span><span class="pill">${plan.items.length} ejercicios</span>${s.circuito ? `<span class="pill">Circuito</span>` : ""}</div>
+      <div style="margin-top:8px">${plan.items.map(it => `<button class="exrow" data-act="ex" data-id="${it.ex.id}">${figHTML(it.ex)}<div><div class="nm">${esc(it.ex.n)}</div><div class="rx">${esc(rxText(it.rx))}</div><div class="mus-t">${esc(musText(it.ex))}</div></div><span class="chev" aria-hidden="true">›</span></button>`).join("")}</div></div>
+      ${d === t && !done ? `<button class="btn ph block" data-act="dayStart" style="margin-top:14px">Empezar ahora</button>` : ""}
+      <details class="acc" style="margin-top:12px"><summary>Cambiar la rutina de este día</summary><div class="chips">${recommendedFor(info.key).map(k => `<button class="chip" data-act="daySet" data-d="${d}" data-k="${k}" aria-pressed="${k === pd.key}">${esc(SESSIONS[k].name)}</button>`).join("")}</div>
+        <p style="margin-top:10px"><a class="small" href="#ejercicios" data-act="goRoutines">Ver todas las rutinas</a></p></details>
+      <button class="btn ghost block" data-act="dayRest" data-d="${d}" style="margin-top:10px">Marcar como descanso</button>`;
+  }
+  if (planOver()[d]) html += `<button class="btn quiet block" data-act="dayReset" data-d="${d}" style="margin-top:8px">Volver al plan sugerido</button>`;
+  openSheet(html);
+}
+function refreshWeek(d) { const y = window.scrollY; render(); window.scrollTo(0, y); if (d) openDay(d); }
+
 function buildPlan(dateISO, forceKey) {
   const info = cycleOn(dateISO);
   const lv = levelFor(dateISO, info);
-  let key = forceKey || sessionOverride || nextSessionKey();
-  if (lv.lvl === 1 && !sessionOverride && !forceKey) key = "recuperacion";
+  let key = forceKey || sessionOverride;
+  if (!key) { const pd = planDay(dateISO); key = pd && !pd.rest ? pd.key : lv.lvl === 1 ? "recuperacion" : nextSessionKey(); }
+  if (!SESSIONS[key]) key = nextSessionKey();
   const ses = SESSIONS[key];
   if (ses.maxLvl && lv.lvl > ses.maxLvl) lv.lvl = ses.maxLvl;
   let slots = ses.slots.slice();
@@ -3007,7 +3166,7 @@ function setPhaseColor(key) {
   document.documentElement.style.setProperty("--ph", c);
   document.documentElement.style.setProperty("--ph-on", key === "ovulatoria" ? "#1C2329" : "#fff");
 }
-function currentTab() { const h = (location.hash || "").replace("#", ""); return ["hoy", "ciclo", "ejercicios", "progreso", "perfil"].includes(h) ? h : "hoy"; }
+function currentTab() { const h = (location.hash || "").replace("#", ""); return ["hoy", "ciclo", "ejercicios", "comida", "progreso", "perfil"].includes(h) ? h : "hoy"; }
 
 function render() {
   const view = $("#view");
@@ -3025,7 +3184,7 @@ function render() {
   setPhaseColor(info.key);
   const tab = currentTab();
   $$("nav.tabs a").forEach(a => { if (a.dataset.tab === tab) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
-  view.innerHTML = { hoy: renderHoy, ciclo: renderCiclo, ejercicios: renderEjercicios, progreso: renderProgreso, perfil: renderPerfil }[tab]();
+  view.innerHTML = { hoy: renderHoy, ciclo: renderCiclo, ejercicios: renderEjercicios, comida: renderComida, progreso: renderProgreso, perfil: renderPerfil }[tab]();
   mountFigs(view);
   if (tab === "progreso") bindChart();
   if (tab === "ejercicios") bindLibrary();
@@ -3123,6 +3282,209 @@ function bindOnboarding() {
   });
 }
 
+/* ================= Alimentación por fase ================= */
+const FOOD = {
+  menstrual: {
+    title: "Repón hierro y alivia el dolor",
+    intro: "Con el sangrado pierdes hierro. Comer alimentos con hierro junto con vitamina C ayuda a reponerlo, y el pescado con omega-3 puede bajar un poco el dolor menstrual.",
+    focus: [
+      { t: "Hierro", d: "El de la carne, el pollo y el pescado se absorbe mejor. El de las menestras y hojas verdes también suma.", f: ["Carne de res", "Muslo de pollo", "Sardinas", "Lenteja", "Fréjol", "Quinoa", "Chochos", "Espinaca o acelga"] },
+      { t: "Vitamina C en la misma comida", d: "Ayuda a absorber el hierro de las menestras y verduras.", f: ["Naranja", "Mandarina", "Guayaba", "Kiwi", "Frutilla", "Pimiento", "Tomate", "Limón"] },
+      { t: "Omega-3", d: "En estudios, el omega-3 redujo un poco la intensidad de los cólicos.", f: ["Sardinas", "Atún", "Trucha", "Chía", "Linaza", "Nueces"] },
+    ],
+    meals: {
+      des: ["Huevos revueltos con espinaca, pan integral y jugo de naranja", "Avena con chía, frutillas y un vaso de leche"],
+      alm: ["Menestra de lenteja, arroz, carne asada y ensalada de tomate con limón", "Seco de pollo con arroz, aguacate y una mandarina de postre"],
+      cen: ["Sopa de quinoa con pollo y verduras", "Sardinas con cebolla y tomate, papas y ensalada"],
+      snk: ["Cevichocho: chochos con tomate, cebolla y limón", "Guayaba o kiwi con un puñado de nueces"],
+    },
+    antojos: "¿Antojo de chocolate? El oscuro (70 % de cacao o más) también aporta hierro y magnesio. Unos cuadritos bastan.",
+    moderar: "El café y el té frenan la absorción del hierro: tómalos 1 o 2 horas antes o después de comer. Las aguas aromáticas calientes, como manzanilla o cedrón, te hidratan y reconfortan.",
+    compras: { prot: ["Carne de res", "Muslos de pollo", "Huevos", "Sardinas en lata", "Lenteja", "Chochos"], carb: ["Avena", "Quinoa", "Arroz", "Pan integral", "Papas"], fv: ["Espinaca o acelga", "Tomate", "Limones", "Naranjas o mandarinas", "Guayabas o kiwis", "Frutillas"], otros: ["Leche", "Chía", "Nueces", "Chocolate oscuro 70 %", "Manzanilla o cedrón"] },
+  },
+  folicular: {
+    title: "Energía para entrenar fuerte",
+    intro: "Muchas mujeres se sienten con más energía en esta fase. Aprovéchala: come carbohidratos de calidad alrededor del entrenamiento y proteína en cada comida para progresar en tus cargas.",
+    focus: [
+      { t: "Carbohidrato para entrenar", d: "Una porción 1 a 3 horas antes te da energía para las series pesadas.", f: ["Avena", "Arroz", "Papa", "Camote", "Mote", "Plátano", "Máchica"] },
+      { t: "Proteína en cada comida", d: "Repartida en el día, ayuda a construir y reparar músculo.", f: ["Huevo", "Pollo", "Pescado", "Queso fresco", "Yogur griego", "Fréjol", "Chochos"] },
+      { t: "Verduras de colores", d: "Fibra, vitaminas y minerales para recuperarte mejor.", f: ["Brócoli", "Zanahoria", "Vainita", "Pimiento", "Remolacha", "Lechuga"] },
+    ],
+    meals: {
+      des: ["Avena cocinada con plátano y canela, más 2 huevos", "Tostadas integrales con queso fresco y aguacate, y un batido de mora"],
+      alm: ["Arroz, pechuga a la plancha, menestra de fréjol y ensalada", "Tallarín integral con carne molida, salsa de tomate y vegetales"],
+      cen: ["Trucha al horno con papas y brócoli", "Tortilla de huevo con vegetales y una porción de camote"],
+      snk: ["Yogur con granola y mora", "Choclo con queso fresco"],
+    },
+    antojos: "",
+    moderar: "",
+    compras: { prot: ["Pechugas de pollo", "Huevos", "Trucha o pescado", "Fréjol", "Queso fresco", "Yogur griego"], carb: ["Avena", "Arroz", "Papas", "Camote", "Mote", "Pan o tallarín integral", "Plátanos"], fv: ["Brócoli", "Zanahoria", "Vainita", "Pimiento", "Aguacate", "Mora", "Lechuga"], otros: ["Mantequilla de maní", "Granola", "Canela"] },
+  },
+  ovulatoria: {
+    title: "Combustible para tus mejores marcas",
+    intro: "Cerca de la ovulación el apetito suele bajar un poco, justo cuando entrenas más intenso. No te saltes comidas: si tienes menos hambre, come porciones más pequeñas y más seguido.",
+    focus: [
+      { t: "Come suficiente", d: "Entrenar fuerte sin comer lo necesario te deja sin energía y frena tu progreso.", f: ["Batidos", "Sánduches", "Frutos secos", "Fruta"] },
+      { t: "Recupérate después de entrenar", d: "Proteína con carbohidrato en las 2 horas siguientes.", f: ["Leche con plátano", "Atún con arroz", "Huevos con papa", "Yogur con avena"] },
+      { t: "Frutas y verduras de colores", d: "Vitaminas y antioxidantes para recuperarte.", f: ["Mora", "Uvilla", "Papaya", "Maracuyá", "Brócoli", "Coliflor"] },
+      { t: "Agua", d: "Si entrenas intenso o hace calor, toma agua antes, durante y después.", f: ["Agua", "Agua de coco", "Sandía"] },
+    ],
+    meals: {
+      des: ["Batido de leche o yogur con plátano, avena y mantequilla de maní", "Bolón de verde al horno con huevo y queso"],
+      alm: ["Ceviche de camarón o pescado con mote y aguacate", "Arroz con menestra, carne a la plancha y maduro al horno"],
+      cen: ["Wrap integral de pollo con aguacate y vegetales", "Arroz con atún, choclo y ensalada"],
+      snk: ["Uvillas con un puñado de maní o nueces", "Sánduche de pollo o de huevo"],
+    },
+    antojos: "",
+    moderar: "",
+    compras: { prot: ["Camarón o pescado", "Carne de res", "Pollo", "Atún en lata", "Huevos", "Maní o nueces"], carb: ["Plátano verde y maduro", "Arroz", "Mote", "Tortillas integrales", "Avena", "Plátanos"], fv: ["Mora", "Uvillas", "Papaya", "Maracuyá", "Aguacate", "Brócoli o coliflor", "Limones"], otros: ["Leche o yogur", "Mantequilla de maní", "Agua de coco"] },
+  },
+  lutea: {
+    title: "Más saciedad y energía estable",
+    intro: "Tu gasto de energía en reposo sube un poco y es normal tener más hambre. No es momento de comer menos: prioriza comidas que llenen, con carbohidratos integrales y un poco más de proteína.",
+    focus: [
+      { t: "Un poco más de proteína", d: "Apunta a la parte alta de tu rango, sobre todo cerca del entrenamiento.", f: ["Pollo", "Pescado", "Huevos", "Lenteja", "Yogur griego", "Queso"] },
+      { t: "Carbohidratos integrales", d: "Dan energía estable y ayudan con el hambre entre comidas.", f: ["Avena", "Quinoa", "Arroz integral", "Camote", "Choclo", "Fréjol"] },
+      { t: "Magnesio y vitamina B6", d: "Algunos estudios los relacionan con menos síntomas antes del periodo.", f: ["Plátano", "Aguacate", "Pepas de zambo", "Garbanzo", "Cacao", "Espinaca"] },
+      { t: "Agua y un poco de sal si sudas mucho", d: "Con más progesterona sube tu temperatura. Si entrenas y sudas mucho, repón agua y también sal.", f: ["Agua", "Sopas", "Frutas jugosas", "Bebida con electrolitos"] },
+    ],
+    meals: {
+      des: ["Yogur con avena, plátano y pepas de zambo", "Tostadas integrales con aguacate y huevo"],
+      alm: ["Quinoa con pollo, aguacate y vegetales salteados", "Arroz integral con menestra de lenteja, pescado y ensalada"],
+      cen: ["Locro de papa con queso fresco y aguacate", "Crema de zapallo con pollo desmenuzado"],
+      snk: ["Choclo con queso fresco", "Plátano con mantequilla de maní"],
+    },
+    antojos: "Tener más hambre es normal en esta fase. Ten a mano snacks con proteína y fibra para no llegar con mucha hambre a la comida.",
+    moderar: "Si notas hinchazón, baja un poco la sal y los productos de paquete.",
+    compras: { prot: ["Pollo", "Pescado", "Huevos", "Lenteja", "Garbanzo", "Yogur griego", "Queso fresco"], carb: ["Avena", "Quinoa", "Arroz integral", "Camote", "Choclo", "Papas"], fv: ["Plátanos", "Aguacate", "Espinaca", "Zapallo", "Tomate", "Fruta de temporada"], otros: ["Pepas de zambo", "Cacao o chocolate oscuro", "Mantequilla de maní"] },
+  },
+  premenstrual: {
+    title: "Calma antojos e hinchazón",
+    intro: "Antes del periodo pueden aparecer antojos, hinchazón y cambios de ánimo. Comer a horas regulares, con proteína y fibra, ayuda a que no llegues con mucha hambre.",
+    focus: [
+      { t: "Calcio", d: "Es el nutriente con mejor evidencia: en ensayos clínicos, el calcio redujo los síntomas premenstruales.", f: ["Leche", "Yogur", "Queso", "Sardinas con espinas", "Brócoli", "Ajonjolí"] },
+      { t: "Comidas regulares", d: "Cada 3 a 4 horas, con proteína y fibra, para tener energía estable.", f: ["Huevos", "Chochos", "Avena", "Fréjol", "Frutas"] },
+      { t: "Menos sal, alcohol y cafeína", d: "Si te hinchas, duermes mal o estás más irritable, bájales estos días.", f: ["Agua", "Aguas aromáticas", "Pepino", "Sandía", "Piña"] },
+    ],
+    meals: {
+      des: ["Avena con leche, canela y manzana", "Tostadas integrales con huevo y un vaso de leche o yogur"],
+      alm: ["Pescado a la plancha, arroz, menestra y ensalada de pepino", "Sopa de quinoa con queso y aguacate"],
+      cen: ["Crema de brócoli con queso fresco y pan integral", "Tortilla de huevo con espinaca y una porción de papa"],
+      snk: ["Yogur con frutillas y chocolate oscuro rallado", "Canguil hecho en casa con poca sal"],
+    },
+    antojos: "¿Antojo de dulce? Fruta con yogur o unos cuadritos de chocolate oscuro. ¿De salado? Canguil casero, chochos con tostado o choclo con queso. Sin culpa: es normal y pasa en unos días.",
+    moderar: "La sal escondida está sobre todo en snacks de paquete, embutidos y comida rápida.",
+    compras: { prot: ["Pescado", "Huevos", "Sardinas en lata", "Chochos", "Fréjol"], carb: ["Avena", "Quinoa", "Arroz", "Pan integral", "Papas", "Maíz para canguil"], fv: ["Brócoli", "Espinaca", "Pepino", "Sandía o piña", "Manzanas", "Frutillas"], otros: ["Leche", "Yogur natural", "Queso fresco", "Ajonjolí", "Chocolate oscuro 70 %"] },
+  },
+  hormonal: {
+    title: "Una base sólida todos los días",
+    intro: "Con anticonceptivo hormonal tus hormonas no suben y bajan como en un ciclo natural. Lo que más cuenta es comer suficiente, con proteína repartida y carbohidratos alrededor del entrenamiento.",
+    focus: [
+      { t: "Proteína repartida", d: "En cada comida, 3 o 4 veces al día.", f: ["Huevo", "Pollo", "Pescado", "Yogur griego", "Lenteja", "Chochos"] },
+      { t: "Carbohidrato para entrenar", d: "Una porción antes y otra después. Si usas píldora, sobre todo en las semanas de pastillas activas.", f: ["Avena", "Arroz", "Papa", "Plátano", "Quinoa"] },
+      { t: "Hierro y calcio", d: "Están entre los nutrientes que más les faltan a las mujeres que entrenan.", f: ["Carne", "Lenteja", "Espinaca", "Leche", "Yogur", "Queso"] },
+      { t: "Frutas y verduras", d: "Varias porciones al día, de colores distintos.", f: ["Brócoli", "Zanahoria", "Naranja", "Mora", "Papaya"] },
+    ],
+    meals: {
+      des: ["Avena con plátano y 2 huevos", "Batido de yogur con mora y avena"],
+      alm: ["Arroz, pollo, menestra y ensalada", "Quinoa con atún, choclo y vegetales"],
+      cen: ["Pescado al horno con papas y brócoli", "Tortilla de huevo con espinaca y pan integral"],
+      snk: ["Yogur con fruta", "Chochos con tostado"],
+    },
+    antojos: "",
+    moderar: "",
+    compras: { prot: ["Pollo", "Huevos", "Pescado o atún", "Lenteja", "Chochos", "Yogur griego"], carb: ["Avena", "Arroz", "Quinoa", "Papas", "Plátanos"], fv: ["Brócoli", "Espinaca", "Zanahoria", "Naranjas", "Mora", "Papaya"], otros: ["Leche", "Queso fresco", "Tostado"] },
+  },
+};
+const MEAL_N = { des: "Desayuno", alm: "Almuerzo", cen: "Cena", snk: "Entre comidas" };
+const SHOP_N = { prot: "Proteínas", carb: "Granos, tubérculos y pan", fv: "Frutas y verduras", otros: "Lácteos y otros" };
+const PROT_REF = [["1 huevo", "6 g"], ["100 g de pollo o carne cocida", "25–30 g"], ["100 g de pescado o 1 lata de atún", "20–25 g"], ["1 taza de lenteja o fréjol cocido", "15–18 g"], ["100 g de chochos", "unos 15 g"], ["1 yogur griego (150 g)", "unos 15 g"], ["1 vaso de leche", "8 g"], ["1 tajada de queso fresco (30 g)", "5–6 g"]];
+let foodSel = null;
+const FOOD_PH = ["menstrual", "folicular", "ovulatoria", "lutea", "premenstrual"];
+function curWeight() {
+  const ws = (state.weights || []).filter(w => w.kg).slice().sort((a, b) => a.d < b.d ? -1 : 1);
+  return ws.length ? +ws[ws.length - 1].kg : +(state.profile && state.profile.peso) || 0;
+}
+function protRange() { const kg = curWeight(); if (!kg) return null; const r5 = x => Math.round(x / 5) * 5; return { kg, lo: r5(kg * 1.4), hi: r5(kg * 2) }; }
+function foodTodayTip(t) {
+  const pd = planDay(t), info = pd ? pd.info : cycleOn(t), done = doneOn(t);
+  const lut = info.key === "lutea" || info.key === "premenstrual";
+  const c = state.checkins[t] || {};
+  if (done) return `Ya entrenaste hoy: en las próximas 2 horas come proteína con carbohidrato para recuperarte${lut ? ", y apunta a la parte alta de tu proteína" : ""}.`;
+  if (!pd || pd.rest) return "Hoy descansas: come como siempre, con proteína en cada comida. No hace falta comer menos por no entrenar; ahí también se construye el músculo.";
+  const nm = SESSIONS[pd.key] ? SESSIONS[pd.key].name : "tu rutina";
+  let s = `Hoy entrenas «${nm}». Come algo con carbohidrato y un poco de proteína entre 1 y 3 horas antes, y una comida con proteína después.`;
+  if (info.key === "menstrual" && (c.sint || []).includes("Flujo abundante")) s += " Con flujo abundante, prioriza hierro con vitamina C.";
+  else if (lut) s += " En esta fase apunta a la parte alta de tu proteína.";
+  return s;
+}
+function foodCardHoy(t) {
+  const info = cycleOn(t), F = FOOD[info.key] || FOOD.hormonal;
+  return `<section class="panel foodhoy">
+    <div class="between"><h3>Come para tu fase</h3><a class="small" href="#comida">Ver guía</a></div>
+    <p style="margin-top:6px;font-weight:700">${phaseSwatch(info.key)} ${esc(F.title)}</p>
+    <ul class="fq">${F.focus.slice(0, 3).map(x => `<li><b>${esc(x.t)}:</b> ${esc(x.f.slice(0, 4).join(", ").toLowerCase())}</li>`).join("")}</ul>
+    <p class="small muted" style="margin-top:10px">${esc(foodTodayTip(t))}</p>
+  </section>`;
+}
+function shopWeek() {
+  const ws = weekStart(today()), ks = [];
+  for (let i = 0; i < 7; i++) { const k = cycleOn(addDays(ws, i)).key; if (!ks.includes(k)) ks.push(k); }
+  const groups = {};
+  Object.keys(SHOP_N).forEach(g => { const seen = new Set(); groups[g] = []; ks.forEach(k => ((FOOD[k] || FOOD.hormonal).compras[g] || []).forEach(x => { const id = x.toLowerCase(); if (!seen.has(id)) { seen.add(id); groups[g].push(x); } })); });
+  const sc = state.compras && state.compras.w === ws ? state.compras : { w: ws, ok: [] };
+  return { ws, ks, groups, ok: sc.ok || [] };
+}
+function shopText() {
+  const S = shopWeek();
+  return "Lista de compras CicloFit\n" + Object.keys(SHOP_N).map(g => `\n${SHOP_N[g]}:\n` + S.groups[g].filter(x => !S.ok.includes(x)).map(x => "• " + x).join("\n")).join("\n");
+}
+function shopSection(open) {
+  const S = shopWeek(), n = Object.values(S.groups).reduce((a, g) => a + g.length, 0);
+  const shop = Object.keys(SHOP_N).map(g => `<p class="sg">${SHOP_N[g]}</p>${S.groups[g].map(x => { const ok = S.ok.includes(x); return `<label class="si${ok ? " ok" : ""}"><input type="checkbox" data-act="shopItem" data-v="${esc(x)}"${ok ? " checked" : ""}><span>${esc(x)}</span></label>`; }).join("")}`).join("");
+  return `<section class="panel shop" id="compras">
+    <div class="between"><h3>Lista de compras de esta semana</h3></div>
+    <p class="small muted" style="margin-top:4px">${S.ks.length === 1 && S.ks[0] === "hormonal" ? "Pensada para entrenar con anticonceptivo hormonal." : "Según tus fases de esta semana: " + S.ks.map(x => esc((PH[x] || PH.hormonal).name.toLowerCase())).join(", ") + "."} Marca lo que ya tienes.</p>
+    <details class="acc" style="margin-top:8px;border-bottom:0"${open ? " open" : ""}><summary>Ver lista: ${n - S.ok.length} de ${n} por comprar</summary>${shop}</details>
+    <div class="row" style="margin-top:14px;gap:10px"><button class="btn ph" data-act="shopShare" style="flex:1">Compartir lista</button>${S.ok.length ? `<button class="btn ghost" data-act="shopReset" style="flex:1">Desmarcar todo</button>` : ""}</div>
+  </section>`;
+}
+function renderComida() {
+  const t = today(), info = cycleOn(t), horm = info.key === "hormonal";
+  const k = horm ? "hormonal" : (foodSel && FOOD[foodSel] ? foodSel : info.key), F = FOOD[k], ph = PH[k] || PH.hormonal, isToday = k === info.key;
+  const pr = protRange();
+  const chips = horm ? "" : `<div class="chips" role="group" aria-label="Fase" style="margin-top:14px">${FOOD_PH.map(x => `<button class="chip" data-act="foodPh" data-v="${x}" aria-pressed="${x === k}">${phaseSwatch(x)}${esc(PH[x].name)}${x === info.key ? " · hoy" : ""}</button>`).join("")}</div>`;
+  const focus = F.focus.map(x => `<div class="focus"><b>${esc(x.t)}</b><p>${esc(x.d)}</p><div class="fl">${x.f.map(y => `<span>${esc(y)}</span>`).join("")}</div></div>`).join("");
+  const meals = Object.keys(MEAL_N).map(m => `<div class="meal"><b>${MEAL_N[m]}</b><ul class="plain">${F.meals[m].map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>`).join("");
+  const extra = [F.antojos ? `<p><b>Antojos.</b> ${esc(F.antojos)}</p>` : "", F.moderar ? `<p><b>Con moderación.</b> ${esc(F.moderar)}</p>` : ""].join("");
+  const prot = pr ? `<div class="pbig">${pr.lo}–${pr.hi} g <span class="small muted">al día</span></div>
+      <p class="small muted" style="margin-top:4px">Con tu peso de ${String(pr.kg).replace(".", ",")} kg, entre 1,4 y 2 g por kilo. Repártelos en 3 o 4 comidas de 20 a 40 g.${k === "lutea" || k === "premenstrual" ? " En esta fase apunta a la parte alta." : ""}</p>`
+    : `<p class="small muted">Registra tu peso en Progreso para calcular tu proteína diaria (1,4 a 2 g por kilo).</p>`;
+  return `<h2 style="margin-top:8px">Alimentación</h2>
+  <p class="muted" style="margin-top:8px">Ajustes pequeños según tu fase. Lo que más cuenta, en cualquier fase, es comer suficiente y variado.</p>
+  ${chips}
+  <section class="panel fcard tight" style="--fc:${ph.color}">
+    <div class="small muted">${horm ? "Con anticonceptivo hormonal" : isToday ? `Tu fase hoy${info.day ? ", día " + info.day : ""}` : "Fase " + esc(ph.name.toLowerCase())}</div>
+    <h2 style="margin-top:2px">${esc(F.title)}</h2>
+    <p class="muted" style="margin-top:8px">${esc(F.intro)}</p>
+    ${focus}
+  </section>
+  ${isToday ? `<section class="tight"><p class="tipbox">${esc(foodTodayTip(t))}</p></section>` : ""}
+  <section><h3>Ideas de comidas</h3><div class="meals">${meals}</div>${extra ? `<div class="stack small" style="margin-top:12px">${extra}</div>` : ""}</section>
+  <section class="panel"><h3>Tu proteína diaria</h3>${prot}
+    <details class="acc" style="margin-top:10px;border-bottom:0"><summary>Cuánta proteína tienen los alimentos</summary><table class="t"><tbody>${PROT_REF.map(r => `<tr><td>${esc(r[0])}</td><td class="num">${esc(r[1])}</td></tr>`).join("")}</tbody></table><p class="xs faint" style="margin-top:6px">Valores aproximados.</p></details>
+  </section>
+  <section><h3>Agua</h3><p class="muted small" style="margin-top:6px">Toma agua durante el día hasta que tu orina sea amarillo claro, y suma unos 400 a 800 ml por cada hora de entrenamiento. Si sudas mucho, repón también sal.</p></section>
+  ${shopSection()}
+  <section><h3>¿Hay que comer distinto en cada fase?</h3>
+    <div class="small muted stack" style="margin-top:8px">
+      <p>Las diferencias son pequeñas. En la fase lútea el gasto en reposo sube entre unas 30 y 120 calorías al día y el hambre suele aumentar; cerca de la ovulación el apetito tiende a bajar.</p>
+      <p>Lo que más importa en todas las fases es comer suficiente, con proteína repartida y carbohidratos para entrenar. Los ajustes de esta guía son pequeños y se basan en evidencia que todavía es limitada.</p>
+      <p>Lecturas: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10210857/" target="_blank" rel="noopener">ISSN, nutrición de la mujer que entrena, 2023</a>, <a href="https://pubmed.ncbi.nlm.nih.gov/39008822/" target="_blank" rel="noopener">Tucker y colaboradores, 2024</a>, <a href="https://doi.org/10.3389/fphys.2026.1778735" target="_blank" rel="noopener">Hurtová y colaboradores, 2026</a>, <a href="https://pubmed.ncbi.nlm.nih.gov/9731851/" target="_blank" rel="noopener">calcio y síntomas premenstruales, 1998</a> y <a href="https://pubmed.ncbi.nlm.nih.gov/35059756/" target="_blank" rel="noopener">omega-3 y cólicos, 2022</a>.</p>
+    </div></section>
+  <section><div class="note"><b style="color:var(--ink)">Habla con tu médico o nutricionista si</b><ul class="plain"><li>empapas una toalla o tampón cada hora durante varias horas, o te sientes muy cansada o mareada: puede faltarte hierro,</li><li>piensas tomar suplementos de hierro, calcio u otros,</li><li>tienes una enfermedad como diabetes o problemas de riñón, estás embarazada o has tenido problemas con la comida.</li></ul></div></section>`;
+}
+
 /* ================= Hoy ================= */
 function renderHoy() {
   const t = today(), p = state.profile;
@@ -3130,6 +3492,7 @@ function renderHoy() {
   const plan = buildPlan(t);
   const ph = PH[info.key];
   const c = state.checkins[t] || {};
+  const pd = planDay(t), done = doneOn(t), chosen = !!sessionOverride || !!(pd && pd.manual && !pd.rest);
   let hero = "";
   if (info.key !== "hormonal" && info.L) {
     const sel = dialSel && dialSel !== info.day ? dialSel : null;
@@ -3186,37 +3549,40 @@ function renderHoy() {
     <p class="why">${esc(why)}</p>${flujo}
     <p class="small" style="margin-top:6px"><button class="btn quiet" data-act="rpeInfo">¿Qué es RPE?</button></p>
   </section>`;
-  const chipOf = ([k, s]) => `<button class="chip" data-act="ses" data-v="${k}" aria-pressed="${plan.key === k}">${esc(s.name)}</button>`;
-  const recS = Object.entries(SESSIONS).filter(([, s]) => s.fases.includes(info.key)), othS = Object.entries(SESSIONS).filter(([, s]) => !s.fases.includes(info.key));
-  const sesChips = `<p class="small muted" style="margin-bottom:8px">${info.key === "hormonal" ? "Recomendadas" : "Recomendadas para tu fase " + esc(PH[info.key].name.toLowerCase())}</p><div class="chips">${recS.map(chipOf).join("")}</div>${othS.length ? `<p class="small muted" style="margin:14px 0 8px">Otras rutinas</p><div class="chips">${othS.map(chipOf).join("")}</div>` : ""}<p style="margin-top:10px"><a class="small" href="#ejercicios" data-act="goRoutines">Ver todas las rutinas con detalle</a></p>`;
-  const session = `
+  const chipOf = k => `<button class="chip" data-act="ses" data-v="${k}" aria-pressed="${plan.key === k}">${esc(SESSIONS[k].name)}</button>`;
+  const recS = recommendedFor(info.key); if (!recS.includes(plan.key)) recS.unshift(plan.key);
+  const sesChips = `<p class="small muted" style="margin-bottom:8px">${info.key === "hormonal" ? "Recomendadas" : "Recomendadas para tu fase " + esc(PH[info.key].name.toLowerCase())}</p><div class="chips">${recS.map(chipOf).join("")}</div>${chosen ? `<p style="margin-top:10px"><button class="btn quiet small" data-act="dayReset" data-d="${t}">Volver a la sugerida por tu plan</button></p>` : ""}<p style="margin-top:6px"><a class="small" href="#ejercicios" data-act="goRoutines">Ver todas las rutinas con detalle</a></p>`;
+  const doneBox = done ? `<p class="donebox">Hoy ya entrenaste <b>${esc(done.sesName)}</b>: ${done.dur} min, esfuerzo ${done.rpe} de 10. Bien hecho.</p>` : "";
+  let nextTrain = "";
+  for (let i = 1; i <= 14 && pd && pd.rest; i++) { const x = addDays(t, i), q = planDay(x); if (!q.rest) { nextTrain = `${i === 1 ? "mañana" : DIAS[parseISO(x).getDay()]}: ${SESSIONS[q.key].name}`; break; } }
+  const restCard = `
+  <section class="panel rail restcard">
+    <div class="small muted">Hoy</div>
+    <h2>Día de descanso</h2>
+    ${doneBox || `<p class="muted" style="margin-top:8px">Descansar también es entrenar: hoy tus músculos se recuperan y se hacen más fuertes. Si te apetece moverte, una caminata o movilidad suave te van bien.</p>`}
+    ${nextTrain ? `<p class="small" style="margin-top:10px">Próximo entrenamiento ${esc(nextTrain)}</p>` : ""}
+    <button class="btn ghost block" data-act="routine" data-k="${restSuggest(info.key)}" style="margin-top:14px">Ver movilidad suave</button>
+    <button class="btn quiet block" data-act="dayTrain" data-d="${t}" style="margin-top:6px">Entrenar hoy de todos modos</button>
+  </section>`;
+  const session = pd && pd.rest && !sessionOverride ? restCard : `
   <section class="panel rail">
-    <div class="small muted">${sessionOverride ? "Sesión elegida por ti" : plan.key === "recuperacion" && lv.lvl === 1 ? "Hoy toca recuperarte" : "Tu sesión de hoy"}</div>
+    <div class="small muted">${chosen ? "Sesión elegida por ti" : plan.key === "recuperacion" && lv.lvl === 1 ? "Hoy toca recuperarte" : "Tu sesión de hoy"}</div>
     <h2 style="margin-top:2px">${esc(plan.ses.name)}</h2>
     <div class="pills"><span class="pill">Unos ${estMin(plan.items)} min</span><span class="pill">${plan.items.length} ejercicios</span>${plan.ses.circuito ? `<span class="pill">Circuito</span>` : ""}</div>
-    <p class="small muted" style="margin-top:8px">${esc(plan.ses.circuito || plan.ses.fuerza || sessionOverride ? plan.ses.desc : ph.focus)}</p>
+    <p class="small muted" style="margin-top:8px">${esc(plan.ses.desc || ph.focus)}</p>${doneBox}
     <div style="margin-top:12px">${plan.items.map(it => `<button class="exrow" data-act="ex" data-id="${it.ex.id}">${figHTML(it.ex)}<div><div class="nm">${esc(it.ex.n)}</div><div class="rx">${esc(rxText(it.rx))}</div><div class="mus-t">${esc(musText(it.ex))}</div></div><span class="chev" aria-hidden="true">›</span></button>`).join("")}</div>
     ${(() => { const P = [...new Set(plan.items.flatMap(it => it.ex.mp))]; const S = [...new Set(plan.items.flatMap(it => it.ex.ms))].filter(k => !P.includes(k)); return `<div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line2)"><h3>Músculos de esta sesión</h3><div class="bm">${bodyMap(P, S)}</div><p class="xs faint" style="margin:4px 0 8px">Oscuro: principales. Claro: secundarios.</p>${musChips(P, S)}</div>`; })()}
-    <button class="btn ph block" data-act="start" style="margin-top:14px">Empezar entrenamiento</button>
+    <button class="btn ${done ? "ghost" : "ph"} block" data-act="start" style="margin-top:14px">${done ? "Hacer otra sesión" : "Empezar entrenamiento"}</button>
     <details class="acc" style="margin-top:12px;border-bottom:0"><summary>Cambiar rutina</summary>${sesChips}</details>
   </section>`;
-  let week = "";
-  if (info.key !== "hormonal") {
-    const days = [];
-    for (let i = 0; i < 7; i++) {
-      const d = addDays(t, i), ci = cycleOn(d);
-      const base = i === 0 ? lv.lvl : Math.min(PH[ci.key].base, p.nivel === "principiante" ? 4 : 5);
-      days.push(`<div class="wd ${i === 0 ? "today" : ""}"><span>${DIAS_C[parseISO(d).getDay()]}</span><b>${parseISO(d).getDate()}</b><div class="bar ${ci.key === "premenstrual" ? "hatch" : ""}" style="background:${PH[ci.key].color}" title="${PH[ci.key].name}"></div>${sigHTML(base)}</div>`);
-    }
-    week = `<section><div class="between"><h3>Próximos 7 días</h3><a class="small" href="#ciclo">Ver calendario</a></div><div class="week">${days.join("")}</div><p class="xs faint" style="margin-top:8px">Las barras de color son tu fase estimada y las rayitas, la intensidad sugerida.</p></section>`;
-  }
+  const week = renderWeek();
   const phaseInfo = `
   <section>
     <details class="acc"><summary>${phaseSwatch(info.key)} ${info.key === "hormonal" ? "Entrenar con anticonceptivo hormonal" : "Qué pasa en tu fase " + esc(ph.name.toLowerCase())}</summary>
       <div class="bd"><p>${esc(ph.horm)}</p><p>${esc(ph.train)}</p><ul class="plain">${ph.tips.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div></details>
   </section>`;
   const name = p.nombre ? `Hola, ${esc(p.nombre)}` : "Hola";
-  return `<div class="hello"><b>${name}</b><span class="small muted">${esc(fmtLong(t))}</span></div>${hero}<section>${checkin}</section>${intensity}${session}${week}${phaseInfo}`;
+  return `<div class="hello"><b>${name}</b><span class="small muted">${esc(fmtLong(t))}</span></div>${hero}<section>${checkin}</section>${pd && pd.rest && !sessionOverride ? "" : intensity}${session}${foodCardHoy(t)}${week}${phaseInfo}`;
 }
 
 /* ================= Ciclo ================= */
@@ -3597,6 +3963,7 @@ function bindPerfil() {
     const { p, errs } = readProfile(f, false);
     if (errs.length) { $("#pErr").innerHTML = errs.map(x => `<p class="err">${esc(x)}</p>`).join(""); return; }
     const wasHorm = state.profile.hormonal;
+    if (p.dias != null && p.dias !== state.profile.dias && state.plan) state.plan = Object.assign({}, state.plan, { dias: null });
     state.profile = Object.assign({}, state.profile, p);
     commit(); toast("Cambios guardados");
     if (wasHorm && !p.hormonal && !state.periods.length) { location.hash = "#hoy"; }
@@ -3719,14 +4086,43 @@ const ACT = {
     commit(); const y = window.scrollY; render(); window.scrollTo(0, y);
     const d = $$("details.acc").find(x => x.textContent.includes("Síntomas")); if (d) d.open = true;
   },
-  ses: el => { sessionOverride = el.dataset.v === nextSessionKey() ? null : el.dataset.v; const y = window.scrollY; render(); window.scrollTo(0, y); },
+  ses: el => { sessionOverride = null; setOver(today(), el.dataset.v); refreshWeek(); const d = $$("details.acc").find(x => x.textContent.includes("Cambiar rutina")); if (d) d.open = true; },
+  wkDay: el => openDay(el.dataset.d),
+  foodPh: el => { foodSel = el.dataset.v; const y = window.scrollY; render(); window.scrollTo(0, y); },
+  shopItem: el => {
+    const S = shopWeek(), v = el.dataset.v, ok = S.ok.slice(), i = ok.indexOf(v);
+    if (el.checked && i < 0) ok.push(v); else if (!el.checked && i >= 0) ok.splice(i, 1);
+    state.compras = { w: S.ws, ok }; commit();
+    const sec = $("#compras");
+    if (sec) { const y = window.scrollY; sec.outerHTML = shopSection(true); window.scrollTo(0, y); const f = $(`#compras input[data-v="${CSS.escape(v)}"]`); if (f) f.focus({ preventScroll: true }); }
+  },
+  shopReset: () => { state.compras = { w: weekStart(today()), ok: [] }; commit(); const sec = $("#compras"); if (sec) { const o = !!$("details[open]", sec); sec.outerHTML = shopSection(o); } },
+  shopShare: async () => {
+    const text = shopText();
+    try { if (navigator.share) { await navigator.share({ title: "Lista de compras", text }); return; } } catch (e) { if (e && e.name === "AbortError") return; }
+    try { await navigator.clipboard.writeText(text); toast("Lista copiada. Pégala en tus notas o en WhatsApp."); } catch (e) { toast("No se pudo copiar la lista"); }
+  },
+  wkNav: el => { wkOffset = clamp(wkOffset + +el.dataset.v, -12, 12); const w = $("#semana"); if (w) w.outerHTML = renderWeek(); const b = $(`#semana [data-act="wkNav"][data-v="${el.dataset.v}"]`); if (b) b.focus({ preventScroll: true }); },
+  wkDays: el => {
+    const v = +el.dataset.v, cur = trainDays().slice(), i = cur.indexOf(v);
+    if (i >= 0) { if (cur.length <= 1) { toast("Deja al menos un día de entrenamiento"); return; } cur.splice(i, 1); } else cur.push(v);
+    state.plan = Object.assign({}, state.plan || {}, { dias: cur.sort((a, b) => a - b) });
+    if (state.profile && cur.length >= 2 && cur.length <= 6) state.profile = Object.assign({}, state.profile, { dias: cur.length });
+    commit(); refreshWeek();
+    const d = $("#semana details"); if (d) d.open = true;
+  },
+  dayTrain: el => { const inSheet = !!el.closest(".sheet"); setOver(el.dataset.d, "train"); refreshWeek(inSheet ? el.dataset.d : null); },
+  daySet: el => { setOver(el.dataset.d, el.dataset.k); toast(`${SESSIONS[el.dataset.k].name} quedó para ese día`); refreshWeek(el.dataset.d); },
+  dayRest: el => { setOver(el.dataset.d, "rest"); refreshWeek(el.dataset.d); },
+  dayReset: el => { const inSheet = !!el.closest(".sheet"); if (el.dataset.d === today()) sessionOverride = null; setOver(el.dataset.d, null); refreshWeek(inSheet ? el.dataset.d : null); },
+  dayStart: () => { closeSheet(); if (W) openWorkout(); else startWorkout(); },
   ex: el => openExercise(el.dataset.id),
   libView: el => { libView = el.dataset.v; render(); window.scrollTo(0, 0); },
   rutMore: () => { rutShow += 20; const l = $("#rutList"); if (l) l.innerHTML = rutCards(); },
   goRoutines: () => { libView = "rutinas"; if (location.hash === "#ejercicios") render(); else location.hash = "#ejercicios"; },
   routine: el => openRoutine(el.dataset.k),
   routineStart: el => { sessionOverride = el.dataset.k; closeSheet(); if (W) { toast("Ya tienes un entrenamiento en curso"); openWorkout(); return; } startWorkout(); },
-  routineSet: el => { sessionOverride = el.dataset.k; closeSheet(); toast(`${SESSIONS[el.dataset.k].name} quedó como tu sesión de hoy`); if (location.hash === "#hoy" || !location.hash) render(); else location.hash = "#hoy"; },
+  routineSet: el => { sessionOverride = null; setOver(today(), el.dataset.k); closeSheet(); toast(`${SESSIONS[el.dataset.k].name} quedó como tu sesión de hoy`); if (location.hash === "#hoy" || !location.hash) render(); else location.hash = "#hoy"; },
   playFig: el => { $$(".sheet .fig").forEach(h => { const r = FIGMAP.get(h); if (r) { r.playing = !r.playing; r.lastPh = -1; setCap(r, cycleU(r.t, r.cue).ph); el.textContent = r.playing ? "Pausar" : "Reproducir"; } }); },
   slowFig: el => { $$(".sheet .fig").forEach(h => { const r = FIGMAP.get(h); if (r) { r.speed = r.speed === 1 ? 0.45 : 1; el.setAttribute("aria-pressed", String(r.speed !== 1)); } }); },
   delVid: el => { delete state.videos[el.dataset.id]; commit(); openExercise(el.dataset.id); },
